@@ -293,8 +293,7 @@ console.log( node.getAttr( 'name' ) )
 
 #### setAttr
 
-Set the named attribute. Calls `getAttributes` and `setAttributes` under the
-hood.
+Set the named attribute
 
 ```javascript
 node.setAttr( 'name', 'Nik' )
@@ -304,9 +303,79 @@ console.log( node.getAttr( 'name' ) )
 ```
 
 #### hasAttr
+
+Returns boolean true if the named attribute exists
+
+```javascript
+node.attr( 'name', 'Nik' )
+
+// true
+console.log( node.hasAttr( 'name' ) )
+```
+
 #### removeAttr
+
+Removes the named attribute
+
+```javascript
+node.attr( 'name', 'Nik' )
+node.removeAttr( 'name' )
+
+// false
+console.log( node.hasAttr( 'name' ) )
+```
+
 #### clearAttrs
+
+Removes all attributes
+
+```javascript
+node.attr( 'name', 'Nik' )
+
+node.clearAttrs()
+
+// {}
+console.log( node.attributes() )
+```
+
 #### valueToAttributes
+
+A helper function that can be used to back a custom `getAttributes` plugin.
+
+Takes the node's value object, [flattens](https://github.com/mojule/flatten) it
+and converts the keys to be suitable for use in attributes, by replacing `.`
+with `_` and indices like `[0]` with `-0`.
+
+We do not currently handle cases where keys already contain the `_` or `-`
+characters, so this behaviour is undefined. In addition, the flatten package
+does not currently handle cases where the key contains `.`, `[` or `]`, so the
+behaviour is also undefined in these cases.
+
+```javascript
+const node = Tree({
+  nodeType: 'something',
+  foo: 'hello',
+  num: 42,
+  bar: {
+    a: [ 'b', 'c', { d: 'e', f: 3 } ]
+  }
+})
+
+console.log( node.valueToAttributes() )
+```
+
+```json
+{
+  "nodeType": "something",
+  "foo": "hello",
+  "num": "42",
+  "bar_a-0": "b",
+  "bar_a-1": "c",
+  "bar_a-2_d": "e",
+  "bar_a-2_f": "3"
+}
+```
+
 #### attributesToValue
 
 ### classes

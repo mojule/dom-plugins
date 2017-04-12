@@ -163,12 +163,13 @@ describe( 'DOM plugins', () => {
       }
 
       const expectAttributes = {
+        nodeType: 'something',
         foo: 'hello',
         num: '42',
-        'bar__a$_0_$': 'b',
-        'bar__a$_1_$': 'c',
-        'bar__a$_2_$__d': 'e',
-        'bar__a$_2_$__f': '3'
+        'bar_a-0': 'b',
+        'bar_a-1': 'c',
+        'bar_a-2_d': 'e',
+        'bar_a-2_f': '3'
       }
 
       const expectValue = {

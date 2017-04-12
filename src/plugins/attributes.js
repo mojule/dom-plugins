@@ -75,13 +75,9 @@ const attributes = node => {
       const value = flatten( node.getValue() )
 
       return Object.keys( value ).reduce( ( attrs, key ) => {
-        if( key === 'nodeType' )
-          return attrs
-
         const newKey = key
-          .replace( /\./g, '__' )
-          .replace( /\[/g, '$_' )
-          .replace( /\]/g, '_$' )
+          .replace( /\./g, '_' )
+          .replace( /\[(\d+)\]/g, '-$1' )
 
         attrs[ newKey ] = value[ key ].toString()
 
@@ -96,9 +92,8 @@ const attributes = node => {
 
       attr = Object.keys( attr ).reduce( ( value, key ) => {
         const newKey = key
-          .replace( /__/g, '.' )
-          .replace( /\$_/g, '[' )
-          .replace( /_\$/g, ']' )
+          .replace( /-(\d+)/g, '[$1]' )
+          .replace( /_/g, '.' )
 
         value[ newKey ] = attr[ key ]
 

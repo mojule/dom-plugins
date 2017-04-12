@@ -412,22 +412,253 @@ console.log( Tree.attributesToValue( attributes ) )
 
 ### classes
 
+Various plugins for working with a node's classes. Like the browser DOM, these
+are expected to be a space separated list of classnames stored in the `class`
+property of the attribute object. Override the plugins for custom behaviour.
+
 #### classNames
+
+Gets an array of class name strings
+
+```javascript
+const node = Tree({
+  attributes: {
+    class: 'one two three'
+  }
+})
+
+// [ 'one', 'two', 'three' ]
+console.log( node.classNames() )
+```
+
 #### addClass
+
+Adds a class to the classNames list
+
+```javascript
+const node = Tree({
+  attributes: {
+    class: 'one two three'
+  }
+})
+
+node.addClass( 'four' )
+
+// [ 'one', 'two', 'three', 'four' ]
+console.log( node.classNames() )
+```
+
 #### hasClass
+
+Returns a boolean indicating if the node has the named class
+
+```javascript
+const node = Tree({
+  attributes: {
+    class: 'one two three'
+  }
+})
+
+// true
+console.log( node.hasClass( 'one' ) )
+```
+
 #### addClasses
+
+Adds multiple class names - you can either pass multiple string arguments or
+an array of strings
+
+```javascript
+const node = Tree.createElement( 'lunchbox' )
+
+node.addClasses( 'one', 'two' )
+node.addClasses( [ 'three', 'four' ] )
+```
+
 #### removeClass
+
+Removes the named class
+
+```javascript
+const node = Tree({
+  attributes: {
+    class: 'one two three'
+  }
+})
+
+node.removeClass( 'two' )
+
+// true
+console.log( node.hasClass( 'one' ) )
+// false
+console.log( node.hasClass( 'two' ) )
+```
+
 #### toggleClass
+
+Toggles the named class on or off. 
+
+If just the class name is passed it will:
+
+- add the class if it doesn't already exist
+- remove the class if it already exists
+
+If you pass the class name and a boolean it will add the class if you pass true,
+and remove it if you pass false
+
+```javascript
+const node = Tree.createElement( 'div', { class: 'one two three' } )
+
+// exists, gets toggled off and removed
+node.toggleClass( 'one' )
+
+// doesn't exist, will get added
+node.toggleClass( 'four' )
+
+// adds 'one'
+node.toggleClass( 'one', true )
+
+// removes 'two'
+node.toggleClass( 'two', false )
+
+// adds five
+node.toggleClass( 'five', true )
+
+// does not add six
+node.toggleClass( 'six', false )
+```
+
 #### clearClasses
+
+Removes all classes
+
+```javascript
+const node = Tree.createElement( 'div', { class: 'one two three' } )
+
+node.clearClasses()
+
+// []
+console.log( node.classNames() )
+```
 
 ### createNodes
 
+Static helpers for creating different types of nodes analagous to those of the
+DOM. If some of these nodes map well to your underlying data structure you may
+want to override these plugins.
+
 #### createText
+
+Creates a text node. The new node's value looks like: 
+
+```json
+{
+  "nodeType": "text",
+  "nodeValue": "some text value"
+}
+```
+
+```javascript
+const node = Tree.createText( 'Hello' )
+
+// 'Hello'
+console.log( node.getValue( "nodeValue" ) )
+```
+
 #### createComment
+
+Creates a comment node. The new node's value looks like: 
+
+```json
+{
+  "nodeType": "comment",
+  "nodeValue": "some text value"
+}
+```
+
+```javascript
+const node = Tree.createComment( 'Delete this' )
+
+// 'Delete this'
+console.log( node.getValue( "nodeValue" ) )
+```
+
 #### createDocumentFragment
+
+Creates a document fragment node. The new node's value looks like: 
+
+```json
+{
+  "nodeType": "documentFragment"
+}
+```
+
+```javascript
+const node = Tree.createDocumentFragment()
+
+// add some children
+```
+
 #### createDocumentType
+
+Creates a document type node. Analagous to the doctype in the DOM.
+
+The new node's value looks like: 
+
+```json
+{
+  "nodeType": "documentType",
+  "name": "...",
+  "publicId": "...",
+  "systemId": "..."
+}
+```
+
+The name is rquired, but publicId and systemId are optional:
+
+```javascript
+const html5 = Tree.createDocumentType( 'html' )
+const html4 = Tree.createDocumentType( 
+  'HTML', '-//W3C//DTD HTML 4.01//EN', 'http://www.w3.org/TR/html4/strict.dtd' 
+)
+```
+
 #### createDocument
+
+Creates a document node. The new node's value looks like: 
+
+```json
+{
+  "nodeType": "document"
+}
+```
+
+```javascript
+const node = Tree.createDocument()
+
+// add some children
+```
+
 #### createElement
+
+Creates an element node. The new node's value looks like this:
+
+```json
+{ 
+  "nodeType": "element", 
+  "tagName": "...", 
+  "attributes": {} 
+}
+```
+
+Takes a tagName and an attributes object:
+
+```javascript
+const lunchbox = Tree.createElement( 'lunchbox', {
+  class: 'container plastic',
+  weight: 0.3
+})
+```
 
 ### dataset
 

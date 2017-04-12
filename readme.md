@@ -340,11 +340,13 @@ console.log( node.attributes() )
 
 #### valueToAttributes
 
-A helper function that can be used to back a custom `getAttributes` plugin.
+A static helper function that can be used to back a custom `getAttributes` 
+plugin.
 
-Takes the node's value object, [flattens](https://github.com/mojule/flatten) it
-and converts the keys to be suitable for use in attributes, by replacing `.`
-with `_` and indices like `[0]` with `-0`.
+Takes a node value object, [flattens](https://github.com/mojule/flatten) it,
+converts the keys to be suitable for use in attributes, by replacing `.` with 
+`_` and indices like `[0]` with `-0`, and if the value is not a string, appends
+a suffix indicating the type, like `-number`.
 
 We do not currently handle cases where keys already contain the `_` or `-`
 characters, so this behaviour is undefined. In addition, the flatten package
@@ -361,7 +363,40 @@ const node = Tree({
   }
 })
 
-console.log( node.valueToAttributes() )
+const value = node.getValue()
+
+console.log( Tree.valueToAttributes( value ) )
+```
+
+```json
+{
+  "nodeType": "something",
+  "foo": "hello",
+  "num-number": "42",
+  "bar_a-0": "b",
+  "bar_a-1": "c",
+  "bar_a-2_d": "e",
+  "bar_a-2_f-number": "3"
+}
+```
+
+#### attributesToValue
+
+Converts an attributes value created by `valueToAttributes` back to a node 
+value. 
+
+```javascript
+const attributes = {
+  nodeType: 'something',
+  foo: 'hello',
+  'num-number': '42',
+  'bar_a-0': 'b',
+  'bar_a-1': 'c',
+  'bar_a-2_d': 'e',
+  'bar_a-2_f-number': '3'
+}
+
+console.log( Tree.attributesToValue( attributes ) )
 ```
 
 ```json
@@ -369,14 +404,11 @@ console.log( node.valueToAttributes() )
   "nodeType": "something",
   "foo": "hello",
   "num": "42",
-  "bar_a-0": "b",
-  "bar_a-1": "c",
-  "bar_a-2_d": "e",
-  "bar_a-2_f": "3"
+  "bar": {
+    "a": [ "b", "c", { "d": "e", "f": "3" } ]
+  }
 }
 ```
-
-#### attributesToValue
 
 ### classes
 

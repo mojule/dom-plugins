@@ -157,6 +157,8 @@ describe( 'DOM plugins', () => {
         nodeType: 'something',
         foo: 'hello',
         num: 42,
+        bool: false,
+        n: null,
         bar: {
           a: [ 'b', 'c', { d: 'e', f: 3 } ]
         }
@@ -165,34 +167,24 @@ describe( 'DOM plugins', () => {
       const expectAttributes = {
         nodeType: 'something',
         foo: 'hello',
-        num: '42',
+        'num-number': '42',
+        'bool-boolean': 'false',
+        'n-null': 'null',
         'bar_a-0': 'b',
         'bar_a-1': 'c',
         'bar_a-2_d': 'e',
-        'bar_a-2_f': '3'
+        'bar_a-2_f-number': '3'
       }
 
-      const expectValue = {
-        nodeType: 'something',
-        foo: 'hello',
-        num: '42',
-        bar: {
-          a: [ 'b', 'c', { d: 'e', f: '3' } ]
-        }
-      }
-
-      const node = Tree( value )
-      const attributes = node.valueToAttributes()
+      const attributes = Tree.valueToAttributes( value )
 
       assert.deepEqual( attributes, expectAttributes )
 
-      node.attributesToValue( attributes )
+      const nodeValue = Tree.attributesToValue( attributes )
 
-      const nodeValue = node.getValue()
+      assert.deepEqual( nodeValue, value )
 
-      assert.deepEqual( nodeValue, expectValue )
-
-      assert.throws( () => node.attributesToValue() )
+      assert.throws( () => Tree.attributesToValue() )
     })
   })
 

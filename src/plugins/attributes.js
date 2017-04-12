@@ -5,6 +5,15 @@ const flatten = require( '@mojule/flatten' )
 
 const { expand } = flatten
 
+const valueTypes = [ 'number', 'boolean', 'null', 'string' ]
+
+const convert = {
+  number: str => parseFloat( str ),
+  boolean: str => str === 'true',
+  null: str => null,
+  string: str => str
+}
+
 const attributes = node => {
   return {
     getAttributes: () => {
@@ -71,38 +80,52 @@ const attributes = node => {
       return value
     },
     clearAttrs: () => node.setValue( 'attributes', {} ),
-    valueToAttributes: () => {
-      const value = flatten( node.getValue() )
+    $valueToAttributes: value => {
+      value = flatten( value )
 
       return Object.keys( value ).reduce( ( attrs, key ) => {
-        const newKey = key
+        let newKey = key
           .replace( /\./g, '_' )
           .replace( /\[(\d+)\]/g, '-$1' )
 
-        attrs[ newKey ] = value[ key ].toString()
+        const valueType = is.of( value[ key ] )
+
+        if( valueType !== 'string' )
+          newKey += `-${ valueType }`
+
+        attrs[ newKey ] = value[ key ] === null ? 
+          'null' : value[ key ].toString()
 
         return attrs
       }, {} )
     },
-    // nb - lossy - every attribute value will be a string
-    // should probably allow a 2nd optional schema arg
-    attributesToValue: attr  => {
+    $attributesToValue: attr  => {
       if( !is.object( attr ) )
         throw new Error( 'Attributes must be an object' )
 
       attr = Object.keys( attr ).reduce( ( value, key ) => {
+        let attrValue = attr[ key ]
+
+        const valueType = valueTypes.find( t => key.endsWith( `-${ t }` ) )
+
+        if( valueType ){
+          const index = key.lastIndexOf( `-${ valueType }` )
+          key = key.substr( 0, index )
+          attrValue = convert[ valueType ]( attrValue )
+        }
+
         const newKey = key
           .replace( /-(\d+)/g, '[$1]' )
           .replace( /_/g, '.' )
 
-        value[ newKey ] = attr[ key ]
+        value[ newKey ] = attrValue
 
         return value
       }, {} )
 
       const value = expand( attr )
 
-      return node.assign( value )
+      return value
     }
   }
 }

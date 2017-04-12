@@ -18,7 +18,7 @@ const defaultOpts = {
 const whitespace = /\s+/g
 
 const State = ( nodeApi, options ) => {
-  options = options || defaultOpts
+  options = Object.assign( {}, defaultOpts, options )
 
   const fragment = nodeApi.createDocumentFragment()
   const done = false
@@ -35,13 +35,7 @@ const State = ( nodeApi, options ) => {
 const Api = handler => {
   const { options, nodeApi, tagStack, fragment } = handler.state
 
-  const oninit = parser => handler.state.parser = parser
-
-  const onreset = () => handler.state = State( nodeApi, options )
-
   const onend = () => {
-    if( handler.state.done ) return
-
     handler.state.done = true
     handler.state.parser = null
 
@@ -63,36 +57,15 @@ const Api = handler => {
   }
 
   const ontext = data => {
-    const normalize = options.normalizeWhitespace || options.ignoreWhitespace ?
-      str => str.replace( whitespace, ' ' ) :
-      str => str
+    if( options.normalizeWhitespace || options.ignoreWhitespace )
+      data = data.replace( whitespace, ' ' )
 
-    const previousText = findPreviousText( handler )
+    const text = nodeApi.createText( data )
 
-    if( previousText ) {
-      const nodeValue = previousText.nodeValue()
-
-      previousText.nodeValue( normalize( nodeValue + data ) )
-    } else {
-      data = normalize( data )
-
-      const text = nodeApi.createText( data )
-
-      addDomNode( handler, text )
-    }
+    addDomNode( handler, text )
   }
 
   const oncomment = data => {
-    const lastTag = tagStack[ tagStack.length - 1 ]
-
-    if( lastTag && lastTag.isComment() ) {
-      const value = lastTag.nodeValue()
-
-      lastTag.nodeValue( value + data )
-
-      return
-    }
-
     const comment = nodeApi.createComment( data )
 
     addDomNode( handler, comment )
@@ -109,34 +82,11 @@ const Api = handler => {
   const getDom = () => handler.state.fragment
 
   const api = {
-    oninit, onreset, onend, onerror, onclosetag, onopentag, ontext, oncomment,
+    onend, onerror, onclosetag, onopentag, ontext, oncomment,
     oncommentend, onprocessinginstruction, getDom
   }
 
   return api
-}
-
-const findPreviousText = handler => {
-  const { tagStack, fragment } = handler.state
-
-  if( tagStack.length ) {
-    const lastTag = tagStack[ tagStack.length - 1 ]
-    const children = lastTag.getChildren()
-
-    if( children.length ) {
-      const lastChild = children[ children.length - 1 ]
-
-      if( lastChild.isText() ) return lastChild
-    }
-  }
-
-  const children = fragment.getChildren()
-
-  if( !children || !children.length ) return
-
-  const lastChild = children[ children.length - 1 ]
-
-  if( lastChild.isText() ) return lastChild
 }
 
 const addDomNode = ( handler, node ) => {
@@ -145,13 +95,7 @@ const addDomNode = ( handler, node ) => {
   const parent = tagStack[ tagStack.length - 1 ]
   const target = parent || fragment
 
-  try {
-    target.append( node )
-  } catch( e ){
-    console.error( target.get() )
-    console.error( node.get() )
-    throw e
-  }
+  target.append( node )
 }
 
 module.exports = DomHandler

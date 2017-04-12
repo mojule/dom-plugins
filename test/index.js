@@ -49,6 +49,7 @@ describe( 'DOM plugins', () => {
       const node = Tree.createDocument()
 
       assert( node.isDocument() )
+      assert( !node.isElement() )
       assert( !node.isEmpty() )
       assert.equal( node.nodeName(), '#document' )
     })
@@ -153,6 +154,7 @@ describe( 'DOM plugins', () => {
 
     it( 'valueToAttributes/attributesToValue', () => {
       const value = {
+        nodeType: 'something',
         foo: 'hello',
         num: 42,
         bar: {
@@ -170,6 +172,7 @@ describe( 'DOM plugins', () => {
       }
 
       const expectValue = {
+        nodeType: 'something',
         foo: 'hello',
         num: '42',
         bar: {
@@ -464,7 +467,6 @@ describe( 'DOM plugins', () => {
     })
   })
 
-  // at this stage, everything but these has been tested, see coverage
   describe( 'stringify', () => {
     it( 'doctype', () => {
       const d = Tree.createDocumentType( 'html', 'myId', 'mySystemId' )
@@ -477,6 +479,26 @@ describe( 'DOM plugins', () => {
 
       assert.equal( n.stringify(), '<div checked></div>' )
     })
+
+    it( 'empty nodes', () => {
+      const isEmpty = node => {
+        const { isEmpty } = node
+        return {
+          isEmpty: () => {
+            if( node.nodeName() === 'cool' )
+              return true
+
+            return isEmpty()
+          }
+        }
+      }
+
+      const Tree = Factory( plugins.concat( isEmpty ) )
+
+      const n = Tree.createElement( 'cool' )
+
+      assert.equal( n.stringify(), '<cool />' )
+    })
   })
 
   it( 'treeType', () => {
@@ -486,24 +508,137 @@ describe( 'DOM plugins', () => {
   })
 
   describe( 'CSS select', () => {
-    // everything else has been tested, see coverage
-    it( 'contains', () => {
-      const html = '<div><strong>Hello</strong></div>'
-      const n = Tree.parse( html )
+    describe( 'querySelector', () => {
+      it( 'tag', () => {
+        const html = '<div><strong>Hello</strong></div>'
+        const n = Tree.parse( html )
 
-      const strong = n.querySelector( ':contains(Hello)' )
+        const strong = n.querySelector( 'strong' )
 
-      assert( strong.isElement() )
+        assert.equal( strong.nodeName(), 'strong' )
+      })
+
+      it( 'attribute', () => {
+        const html = '<div><strong class="cool">Hello</strong></div>'
+        const n = Tree.parse( html )
+
+        const strong = n.querySelector( '.cool' )
+
+        assert.equal( strong.nodeName(), 'strong' )
+      })
+
+      it( ':contains', () => {
+        const html = '<div><strong>Hello</strong></div>'
+        const n = Tree.parse( html )
+
+        const strong = n.querySelector( ':contains(Hello)' )
+
+        assert( strong.isElement() )
+      })
+    })
+
+    describe( 'querySelectorAll', () => {
+      it( 'tag', () => {
+        const html = '<div><strong>Hello</strong> <strong>World</strong></div>'
+        const n = Tree.parse( html )
+
+        const strongs = n.querySelectorAll( 'strong' )
+
+        assert.equal( strongs.length, 2 )
+        assert( strongs.every( s => s.nodeName() === 'strong' ) )
+      })
+
+      it( 'attribute', () => {
+        const html = '<div><strong class="cool">Hello</strong> <strong class="cool">World</strong></div>'
+        const n = Tree.parse( html )
+
+        const strongs = n.querySelectorAll( '.cool' )
+
+        assert.equal( strongs.length, 2 )
+        assert( strongs.every( s => s.nodeName() === 'strong' ) )
+      })
+
+      it( ':contains', () => {
+        const html = '<div><strong class="cool">Hello</strong> <strong class="cool">Hello</strong></div>'
+        const n = Tree.parse( html )
+
+        const strongs = n.querySelectorAll( ':contains(Hello)' )
+
+        assert.equal( strongs.length, 2 )
+        assert( strongs.every( s => s.nodeName() === 'strong' ) )
+      })
+    })
+
+    describe( 'matches', () => {
+      it( 'tag', () => {
+        const html = '<div><strong>Hello</strong></div>'
+        const n = Tree.parse( html )
+
+        const strong = n.querySelector( 'strong' )
+
+        assert( strong.matches( 'strong' ) )
+      })
+
+      it( 'attribute', () => {
+        const html = '<div><strong class="cool">Hello</strong></div>'
+        const n = Tree.parse( html )
+
+        const strong = n.querySelector( '.cool' )
+
+        assert( strong.matches( '.cool' ) )
+      })
+
+      it( ':contains', () => {
+        const html = '<div><strong>Hello</strong></div>'
+        const n = Tree.parse( html )
+
+        const strong = n.querySelector( ':contains(Hello)' )
+
+        assert( strong.matches( ':contains(Hello)' ) )
+      })
     })
   })
 
   describe( 'Parser', () => {
-    // everything else has been tested, see coverage
     it( 'comment', () => {
       const html = '<!--Hello-->'
       const n = Tree.parse( html )
 
       assert( n.isComment() )
+    })
+
+    it( 'processing instruction to comment', () => {
+      const html = '<? Hello ?>'
+      const n = Tree.parse( html )
+
+      assert( n.isComment() )
+    })
+
+    it( 'removeWhitespace', () => {
+      const html = '  <div>Hello</div>  <span>World</span>'
+      const n = Tree.parse( html, { removeWhitespace: true } )
+
+      assert.equal( n.stringify(), '<div>Hello</div><span>World</span>' )
+    })
+
+    it( 'ignoreWhitespace', () => {
+      const html = '  \n\t<div>Hello</div> \n  \r  <span>World</span>  '
+      const n = Tree.parse( html, { ignoreWhitespace: true } )
+
+      assert.equal( n.stringify(), ' <div>Hello</div> <span>World</span> ' )
+    })
+
+    it( 'calls DomHandler onerror', () => {
+      const DomHandler = require( '../src/domhandler-adapter' )
+      const htmlparser2 = require( 'htmlparser2' )
+
+      const handler = DomHandler( Tree )
+
+      const parser = new htmlparser2.Parser( handler )
+
+      parser.end( '<div></div>' )
+
+      assert.throws( () => parser.write( '<div></div>' ) )
     })
   })
 })

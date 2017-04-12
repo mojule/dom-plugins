@@ -17,7 +17,7 @@ const parser = node => {
     $parse: ( str, options = {} ) => {
       options = Object.assign( {}, defaultOptions, options )
 
-      const handler = DomHandler( node )
+      const handler = DomHandler( node, options )
 
       // look at the API on this thing 😂
       new htmlparser2.Parser( handler, options ).end( str )

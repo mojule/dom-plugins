@@ -403,9 +403,9 @@ console.log( Tree.attributesToValue( attributes ) )
 {
   "nodeType": "something",
   "foo": "hello",
-  "num": "42",
+  "num": 42,
   "bar": {
-    "a": [ "b", "c", { "d": "e", "f": "3" } ]
+    "a": [ "b", "c", { "d": "e", "f": 3 } ]
   }
 }
 ```

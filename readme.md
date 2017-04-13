@@ -662,13 +662,92 @@ const lunchbox = Tree.createElement( 'lunchbox', {
 
 ### dataset
 
-#### getDataset
-#### setDataset
+Acts like the browser DOM dataset - provides an abstraction over any attributes
+prefixed by `data-`.
+
+The abstraction converts between hyphenated `data-` style attributes and 
+camelCased attributes:
+
+```javascript
+{
+  'data-first-name': 'Nik',
+  'data-last-name': 'Coughlin'
+}
+
+{
+  firstName: 'Nik',
+  lastName: 'Coughlin'
+}
+```
+
 #### dataset
+
+Convenience wrapper - calls getDataset/setDataset depending on arguments passed.
+
+```javascript
+node.dataset({
+  firstName: 'Nik',
+  lastName: 'Coughlin'
+})
+
+console.log( node.dataset() )
+```
+
+#### getDataset
+
+Returns a camelCase style object from `data-` attributes
+
+```javascript
+const node = Tree.createElement( 'thing', {
+  id: 'myThing'
+  'data-first-name': 'Nik',
+  'data-last-name': 'Coughlin'
+})
+
+console.log( node.dataset() )
+```
+
+```json
+{
+  "firstName": "Nik",
+  "lastName": "Coughlin"
+}
+```
+
+#### setDataset
+
+Takes a camelCased object and sets `data-` attributes accordingly
+
+```javascript
+node.setDataset({
+  firstName: 'Nik',
+  lastName: 'Coughlin'
+})
+```
 
 ### getText
 
+Gets a string which is the concatenation of all text nodes that are descendants
+of the current node
+
+```javascript
+const container = Tree.createElement( 'container' )
+const anotherContainer = Tree.createElement( 'container' )
+
+const hello = Tree.createText( 'Hello' )
+const world = Tree.createText( ', World!' )
+
+container.append( hello )
+container.append( anotherContainer )
+anotherContainer.append( world )
+
+// 'Hello, World!'
+console.log( container.getText() )
+```
+
 ### isEmpty
+
+
 
 ### isType
 

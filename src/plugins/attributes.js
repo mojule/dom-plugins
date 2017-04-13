@@ -10,8 +10,7 @@ const valueTypes = [ 'number', 'boolean', 'null', 'string' ]
 const convert = {
   number: str => parseFloat( str ),
   boolean: str => str === 'true',
-  null: str => null,
-  string: str => str
+  null: str => null
 }
 
 const attributes = node => {

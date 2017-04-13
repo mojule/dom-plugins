@@ -1,8 +1,8 @@
 # DOM plugins
 
-A set of plugins for mojule tree that lets you treat any tree as a DOM, allowing
-you to do interesting things like run query selectors over your tree even if
-the nodes don't represent HTML elements.
+A set of plugins for mojule [tree](https://github.com/mojule/tree) that lets you 
+treat any tree as a DOM, allowing you to do interesting things like run query 
+selectors over your tree even if the nodes don't represent HTML elements.
 
 ## Install
 
@@ -747,27 +747,192 @@ console.log( container.getText() )
 
 ### isEmpty
 
+Overrides base `isEmpty` from 
+[tree-factory](https://github.com/mojule/tree-factory) and any other `isEmpty`
+plugins added prior to the DOM plugins, and returns `true` if the node matches 
+any of the following `isType` plugins:
 
+- isText
+- isComment
+- isDocumentType
+
+`false` for the following:
+
+- isDocumentFragment
+- isDocument
+
+If none of the above are true, it returns the result of the previous `isEmpty`
+plugin.
+
+```javascript
+const text = Tree.createText( 'Hello' )
+
+// true
+console.log( text.isEmpty() )
+```
 
 ### isType
 
+A set of functions that return `true` if the current node is of a given node 
+type.
+
 #### isText
+
+Default implementation returns `true` if `node.nodeType() === 'text'`
+
+```javascript
+const text = Tree.createText( 'Hello' )
+
+// true
+console.log( text.isText() )
+```
+
 #### isComment
+
+Default implementation returns `true` if `node.nodeType() === 'comment'`
+
+```javascript
+const comment = Tree.createComment( 'Hello' )
+
+// true
+console.log( comment.isComment() )
+```
+
 #### isDocumentFragment
+
+Default implementation returns `true` if 
+`node.nodeType() === 'documentFragment'`
+
+```javascript
+const fragment = Tree.createDocumentFragment()
+
+// true
+console.log( fragment.isDocumentFragment() )
+```
+
 #### isDocumentType
+
+Default implementation returns `true` if `node.nodeType() === 'documentType'`
+
+```javascript
+const doctype = Tree.createDocumentType( 'tree' )
+
+// true
+console.log( doctype.isDocumentType() )
+```
+
 #### isDocument
+
+Default implementation returns `true` if `node.nodeType() === 'document'`
+
+```javascript
+const doc = Tree.createDocument()
+
+// true
+console.log( doc.isDocument() )
+```
+
 #### isElement
+
+Returns true if none of the above conditions are met - this means that if you
+don't override anything, most of your custom tree nodes will be considered 
+elements, as will elements created with `Tree.createElement`
+
+```javascript
+const node = Tree({ name: 'Nik' })
+
+// true
+console.log( doc.isElement() )
+```
 
 ### name
 
+Plugins that emulate tagName and nodeName from the browser DOM
+
 #### tagName
+
+If the node has a tagName property on its value, that will be returned. Falls
+back to `nodeType` otherwise. If you haven't overriden `nodeType`, the default
+value is 'node'.
+
+```javascript
+const node = Tree({ name: 'Nik' })
+
+// 'node'
+console.log( node.tagName() )
+
+const banana = Tree.createElement( 'banana' )
+
+// 'banana'
+console.log( banana.tagName() )
+```
+
 #### nodeName
+
+Tests the various `isText`, `isComment` etc. and returns '#text', '#comment', 
+'#document' or '#document-fragment' as appropriate.
+
+If the node `isDocumentType` returns the node's `name` property if it exists, 
+otherwise falls back to `node.treeType()`
+
+If the node `isElement`, returns `node.tagName()`
+
+```javascript
+const hello = Tree.createText( 'Hello' )
+const node = Tree({ name: 'Nik' })
+const banana = Tree.createElement( 'banana' )
+
+// '#text'
+console.log( hello.nodeName() )
+
+// 'node'
+console.log( node.nodeName() )
+
+// 'banana'
+console.log( banana.nodeName() )
+```
 
 ### nodeValue
 
-#### getNodeValue
-#### setNodeValue
+By default, a shortcut to getting or setting the `nodeValue` property of the 
+node's value object, can be overridden for custom behaviour
+
 #### nodeValue
+
+Convenience function around `getNodeValue`/`setNodeValue`
+
+```javascript
+const node = Tree.createText( 'Hello' )
+
+node.nodeValue( 'Hello, World!' )
+
+// 'Hello, World!'
+console.log( node.nodeValue() )
+```
+
+#### getNodeValue
+
+Get the `nodeValue` property of the node's value object
+
+```javascript
+const node = Tree.createText( 'Hello' )
+
+// 'Hello'
+console.log( node.getNodeValue() )
+```
+
+#### setNodeValue
+
+Get the `nodeValue` property of the node's value object
+
+```javascript
+const node = Tree.createText( 'Hello' )
+
+node.setNodeValue( 'Hello, World!' )
+
+// 'Hello, World!'
+console.log( node.nodeValue() )
+```
 
 ### parser
 
@@ -782,3 +947,12 @@ matches
 ### stringify
 
 ### treeType
+
+Returns the type of the current tree - default implementation always uses
+`tree`, intended to be overridden by custom plugins. Used by documentType nodes
+when there is no name property.
+
+```javascript
+// 'tree'
+console.log( Tree.treeType() )
+```

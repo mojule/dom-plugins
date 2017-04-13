@@ -936,15 +936,109 @@ console.log( node.nodeValue() )
 
 ### parser
 
+Static method that parses an XML-like representation of your tree and returns 
+either a root node if the markup has a single root element, or a 
+documentFragment node if the markup contains more than one unrooted node.
 
+Uses [htmlparser2](https://github.com/fb55/htmlparser2) with a custom adapter 
+under the hood.
+
+Takes an optional second `options` argument which is passed through to 
+htmlparser2, see their docs for more info. Adds an extra property to the 
+options, `removeWhitespace`, which will remove all whitespace-only nodes, useful
+for parsing pretty-printed XML for custom trees where whitespace nodes don't
+make sense.
+
+```javascript
+const node = Tree.parse( '<hello><world /></hello>' )
+
+// 'hello'
+console.log( node.tagName() )
+
+const node2 = Tree.parse( `
+<hello>
+  <world class="foo" />
+</hello>  
+`, { removeWhitespace: true } )
+```
 
 ### select
 
-querySelector
-querySelectorAll
-matches
+Plugins allowing you to use CSS selectors to query your tree.
+
+Backed by [css-select](https://github.com/fb55/css-select) with a custom 
+adapter. css-select supports all CSS3 selectors, as well as some additional
+selectors from jQuery and some of its own as well. See the docs for more info.
+
+#### querySelector
+
+Finds the first descendant node of the current node that matches the given
+selector. Like the browser DOM, it does not include the current node in the 
+search.
+
+```javascript
+const node2 = Tree.parse( `
+<hello>
+  <world class="foo" />
+</hello>  
+`, { removeWhitespace: true } )
+
+const foo = node2.querySelector( '.foo' )
+```
+
+#### querySelectorAll
+
+Finds all descendant nodes that match the given selector.  Like the browser DOM, 
+it does not include the current node in the search. Returns an array of matching
+nodes.
+
+```javascript
+const node2 = Tree.parse( `
+<hello>
+  <world class="foo" />
+  <world class="bar" />
+</hello>  
+`, { removeWhitespace: true } )
+
+const worlds = node2.querySelectorAll( 'world' )
+
+// 2
+console.log( worlds.length )
+```
+
+#### matches
+
+Returns a boolean indicating whether the current node matches the given 
+selector.
+
+```javascript
+const node2 = Tree.parse( `
+<hello>
+  <world class="foo" />
+</hello>  
+`, { removeWhitespace: true } )
+
+// true
+console.log( node2.matches( 'hello' ) )
+```
 
 ### stringify
+
+Creates an XML-like string representation of your tree
+
+```javascript
+const box = Tree.createElement( 'box' )
+const hat = Tree.createElement( 'hat' )
+const priceTag = Tree.createElement( 'price' )
+const price = Tree.createText( 'In this style 10/6' )
+
+box.append( hat )
+hat.append( priceTag )
+priceTag.append( price )
+
+// '<box><hat><price>In this style 10/6</price></hat></box>
+console.log( box.stringify() )
+```
 
 ### treeType
 

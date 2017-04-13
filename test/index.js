@@ -634,4 +634,64 @@ describe( 'DOM plugins', () => {
       assert.throws( () => parser.write( '<div></div>' ) )
     })
   })
+
+  describe( 'H Factory', () => {
+    it( 'Takes custom nodeNames', () => {
+      const tagNames = [ 'box', 'hat', 'cheese' ]
+
+      const h = Tree.H( tagNames )
+
+      const { 
+        document, documentType, documentFragment, text, comment,
+        box, hat, cheese
+      } = h
+
+      const doc = document(
+        documentType( 'silly' ),
+        documentFragment(
+          comment( 'so silly' ),
+          box(
+            { id: 'myBox' },
+            hat(),
+            cheese(
+              text( 'delicious ' ),
+              'cheese'
+            )
+          )
+        )
+      )
+
+      const expect = '<!doctype silly><!--so silly--><box id="myBox"><hat></hat><cheese>delicious cheese</cheese></box>'
+
+      assert.equal( doc.stringify(), expect )
+    })    
+
+    it( 'defaults to HTML', () => {
+      const h = Tree.H()
+
+      const { 
+        document, documentType, documentFragment, text, comment,
+        div, p, span
+      } = h
+
+      const doc = document(
+        documentType( 'html' ),
+        documentFragment(
+          comment( 'so silly' ),
+          div(
+            { id: 'myDiv' },
+            p(),
+            span(
+              text( 'delicious ' ),
+              'cheese'
+            )
+          )
+        )
+      )
+
+      const expect = '<!doctype html><!--so silly--><div id="myDiv"><p></p><span>delicious cheese</span></div>'
+
+      assert.equal( doc.stringify(), expect )      
+    })
+  })
 })

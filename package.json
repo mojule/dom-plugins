@@ -1,6 +1,6 @@
 {
   "name": "@mojule/dom-plugins",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A set of plugins for @mojule/tree that lets you treat any tree as a DOM",
   "main": "index.js",
   "scripts": {
@@ -38,6 +38,7 @@
     "@mojule/utils": "^0.1.10",
     "css-select": "^1.3.0-rc0",
     "css-select-base-adapter": "^0.1.0",
+    "html-script": "^0.2.1",
     "htmlparser2": "^3.9.2"
   }
 }

@@ -745,6 +745,46 @@ anotherContainer.append( world )
 console.log( container.getText() )
 ```
 
+### H Factory
+
+Generates a [hyperscript](https://github.com/hyperhype/hyperscript)-like API
+as a convenience wrapper for generating nested nodes - backed by 
+[html-script](https://github.com/mojule/html-script/).
+
+The arguments should either be multiple strings for the node names you want to
+use, or a single array of strings
+
+If you omit the arguments, the node names from HTML (`div`, `p` etc) will be 
+used.
+
+```javascript
+// alternately, Tree.H( [ 'box', 'hat', 'cheese' ] )
+const h = Tree.H( 'box', 'hat', 'cheese' )
+
+const { 
+  document, documentType, documentFragment, text, comment,
+  box, hat, cheese
+} = h
+
+const doc = document(
+  documentType( 'silly' ),
+  documentFragment(
+    comment( 'so silly' ),
+    box(
+      { id: 'myBox' },
+      hat(),
+      cheese(
+        text( 'delicious ' ),
+        'cheese'
+      )
+    )
+  )
+)
+
+// '<!doctype silly><!--so silly--><box id="myBox"><hat></hat><cheese>delicious cheese</cheese></box>'
+console.log( doc.stringify() )
+```
+
 ### isEmpty
 
 Overrides base `isEmpty` from 

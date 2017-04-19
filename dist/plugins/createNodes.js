@@ -1,11 +1,14 @@
 'use strict';
 
+var _require = require('@mojule/utils'),
+    escapeHtml = _require.escapeHtml;
+
 var createOmNode = function createOmNode(node) {
   return {
     $createText: function $createText(text) {
       var value = {
         nodeType: 'text',
-        nodeValue: text
+        nodeValue: escapeHtml(text)
       };
 
       return node(value);
@@ -13,7 +16,7 @@ var createOmNode = function createOmNode(node) {
     $createComment: function $createComment(comment) {
       var value = {
         nodeType: 'comment',
-        nodeValue: comment
+        nodeValue: escapeHtml(comment)
       };
 
       return node(value);

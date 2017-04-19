@@ -4,17 +4,34 @@ const is = require( '@mojule/is' )
 
 const name = node => {
   return {
-    tagName: () => {
+    tagName: value => {
+      if( is.string( value ) ){
+        return node.setTagName( value )
+      }
+
+      return node.getTagName()
+    },
+    getTagName: () => {
       const tagName = node.getValue( 'tagName' )
 
       if( is.string( tagName ) ){
-        if( tagName.length === 0 )
+        if( tagName.trim() === '' )
           throw new Error( 'Expected tagName to be a non-empty string' )
 
         return tagName
       }
 
       return node.nodeType()
+    },
+    setTagName: value => {
+      if( !is.string( value ) || value.trim() === '' )
+        throw new Error( 'Expected tagName to be a non-empty string' )
+
+      value = value.trim()
+
+      node.setValue( 'tagName', value )
+
+      return value
     },
     nodeName: () => {
       if( node.isText() )

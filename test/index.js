@@ -389,18 +389,32 @@ describe( 'DOM plugins', () => {
     assert.equal( i.getText(), '' )
   })
 
-  it( 'tagName', () => {
+  it( 'getTagName', () => {
     const cool = Tree( { tagName: 'cool' } )
 
-    assert.equal( cool.tagName(), 'cool' )
+    assert.equal( cool.getTagName(), 'cool' )
 
     const wut = Tree( { tagName: '' } )
 
-    assert.throws( () => wut.tagName() )
+    assert.throws( () => wut.getTagName() )
 
     const nope = Tree( { tagName: 42 } )
 
-    assert.equal( nope.tagName(), 'node', 'falls back to default nodeType' )
+    assert.equal( nope.getTagName(), 'node', 'falls back to default nodeType' )
+  })
+
+  it( 'setTagName', () => {
+    const cool = Tree( { tagName: 'cool' } )
+
+    cool.setTagName( 'dumb' )
+
+    assert.equal( cool.getTagName(), 'dumb' )
+
+    cool.tagName( 'cool' )
+
+    assert.equal( cool.getTagName(), 'cool' )
+
+    assert.throws( () => cool.setTagName() )
   })
 
   it( 'nodeName', () => {
@@ -641,7 +655,7 @@ describe( 'DOM plugins', () => {
 
       const h = Tree.H( tagNames )
 
-      const { 
+      const {
         document, documentType, documentFragment, text, comment,
         box, hat, cheese
       } = h
@@ -664,12 +678,12 @@ describe( 'DOM plugins', () => {
       const expect = '<!doctype silly><!--so silly--><box id="myBox"><hat></hat><cheese>delicious cheese</cheese></box>'
 
       assert.equal( doc.stringify(), expect )
-    })    
+    })
 
     it( 'defaults to HTML', () => {
       const h = Tree.H()
 
-      const { 
+      const {
         document, documentType, documentFragment, text, comment,
         div, p, span
       } = h
@@ -691,7 +705,7 @@ describe( 'DOM plugins', () => {
 
       const expect = '<!doctype html><!--so silly--><div id="myDiv"><p></p><span>delicious cheese</span></div>'
 
-      assert.equal( doc.stringify(), expect )      
+      assert.equal( doc.stringify(), expect )
     })
   })
 })

@@ -4,16 +4,32 @@ var is = require('@mojule/is');
 
 var name = function name(node) {
   return {
-    tagName: function tagName() {
+    tagName: function tagName(value) {
+      if (is.string(value)) {
+        return node.setTagName(value);
+      }
+
+      return node.getTagName();
+    },
+    getTagName: function getTagName() {
       var tagName = node.getValue('tagName');
 
       if (is.string(tagName)) {
-        if (tagName.length === 0) throw new Error('Expected tagName to be a non-empty string');
+        if (tagName.trim() === '') throw new Error('Expected tagName to be a non-empty string');
 
         return tagName;
       }
 
       return node.nodeType();
+    },
+    setTagName: function setTagName(value) {
+      if (!is.string(value) || value.trim() === '') throw new Error('Expected tagName to be a non-empty string');
+
+      value = value.trim();
+
+      node.setValue('tagName', value);
+
+      return value;
     },
     nodeName: function nodeName() {
       if (node.isText()) return '#text';

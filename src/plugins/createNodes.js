@@ -1,11 +1,13 @@
 'use strict'
 
+const { escapeHtml } = require( '@mojule/utils' )
+
 const createOmNode = node => {
   return {
     $createText: text => {
       const value = {
         nodeType: 'text',
-        nodeValue: text
+        nodeValue: escapeHtml( text )
       }
 
       return node( value )
@@ -13,7 +15,7 @@ const createOmNode = node => {
     $createComment: comment => {
       const value = {
         nodeType: 'comment',
-        nodeValue: comment
+        nodeValue: escapeHtml( comment )
       }
 
       return node( value )

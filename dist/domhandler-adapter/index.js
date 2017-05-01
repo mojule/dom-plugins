@@ -84,7 +84,6 @@ var Api = function Api(handler) {
       var doctype = nodeApi.createDocumentType('html');
 
       addDomNode(handler, doctype);
-      tagStack.push(doctype);
 
       return;
     }

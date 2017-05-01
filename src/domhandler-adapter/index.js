@@ -78,7 +78,6 @@ const Api = handler => {
       const doctype = nodeApi.createDocumentType( 'html' )
 
       addDomNode( handler, doctype )
-      tagStack.push( doctype )
 
       return
     }

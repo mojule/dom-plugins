@@ -474,11 +474,12 @@ describe( 'DOM plugins', () => {
     })
 
     it( 'doctype', () => {
-      const html = '<!doctype html>'
-      const dt = Tree.parse( html )
+      const html = '<!doctype html><div></div>'
+      const fragment = Tree.parse( html )
+      const dt = fragment.firstChild()
 
       assert( dt.isDocumentType() )
-      assert.equal( dt.stringify(), html )
+      assert.equal( fragment.stringify(), html )
     })
   })
 

@@ -73,6 +73,16 @@ const Api = handler => {
   }
 
   const onprocessinginstruction = ( name, data ) => {
+    /* only support html5 doctype, look into parsing the data string properly */
+    if( data.toLowerCase().startsWith( '!doctype' ) ){
+      const doctype = nodeApi.createDocumentType( 'html' )
+
+      addDomNode( handler, doctype )
+      tagStack.push( doctype )
+
+      return
+    }
+
     oncomment( data )
     oncommentend()
   }

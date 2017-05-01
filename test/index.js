@@ -472,6 +472,14 @@ describe( 'DOM plugins', () => {
       assert.equal( div.nodeType(), 'documentFragment' )
       assert.equal( div.stringify(), html )
     })
+
+    it( 'doctype', () => {
+      const html = '<!doctype html>'
+      const dt = Tree.parse( html )
+
+      assert( dt.isDocumentType() )
+      assert.equal( dt.stringify(), html )
+    })
   })
 
   describe( 'stringify', () => {

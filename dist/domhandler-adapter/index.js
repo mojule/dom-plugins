@@ -79,6 +79,16 @@ var Api = function Api(handler) {
   };
 
   var onprocessinginstruction = function onprocessinginstruction(name, data) {
+    /* only support html5 doctype, look into parsing the data string properly */
+    if (data.toLowerCase().startsWith('!doctype')) {
+      var doctype = nodeApi.createDocumentType('html');
+
+      addDomNode(handler, doctype);
+      tagStack.push(doctype);
+
+      return;
+    }
+
     oncomment(data);
     oncommentend();
   };

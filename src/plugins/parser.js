@@ -9,7 +9,8 @@ const defaultOptions = {
     normal mode
   */
   xmlMode: true,
-  removeWhitespace: false
+  removeWhitespace: false,
+  trimText: false
 }
 
 const parser = node => {
@@ -28,6 +29,15 @@ const parser = node => {
         dom.prune( current =>
           current.isText() && current.nodeValue().trim() === ''
         )
+
+      if( options.trimText )
+        dom.walk( current => {
+          if( !current.isText() ) return
+
+          const text = current.nodeValue()
+
+          current.nodeValue( text.trim() )
+        })
 
       const isSingleElement =
         dom.isDocumentFragment() && dom.getChildren().length === 1

@@ -1,61 +1,169 @@
 'use strict'
 
+const is = require( '@mojule/is' )
 const utils = require( '@mojule/utils' )
 
 const { escapeHtml } = utils
 
+const defaultOptions = {
+  indent: '  ',
+  pretty: false,
+  depth: 0,
+  wrapAt: 80
+}
+
+const text = node => escapeHtml( node.nodeValue() )
+
+const comment = node => `<!--${ node.nodeValue() }-->`
+
+const doctype = node => {
+  let ml = ''
+
+  const { name, publicId, systemId } = node.getValue()
+
+  ml += `<!doctype ${ name }`
+
+  if( publicId ){
+    ml += ` public "${ publicId }"`
+  }
+
+  if( systemId ){
+    ml += ` "${ systemId }"`
+  }
+
+  ml += '>'
+
+  return ml
+}
+
+const openTag = node => {
+  let ml = `<${ node.tagName() }`
+
+  const attributes = node.getAttributes()
+
+  Object.keys( attributes ).forEach( name => {
+    const value = attributes[ name ]
+
+    ml += ` ${ name }`
+
+    if( value )
+      ml += `="${ value }"`
+  })
+
+  ml += node.isEmpty() ? ' />' : '>'
+
+  return ml
+}
+
+const closeTag = node => node.isEmpty() ? '' : `</${ node.tagName() }>`
+
+/*
+  if has no children
+    omit eol after open tag
+    omit indentation before close tag
+*/
+
 const stringify = node => {
-  const stringify = () => {
+  const stringify = ( options = {} ) => {
+    options = Object.assign( {}, defaultOptions, options )
+
+    const { indent, wrapAt } = options
+    let { pretty, depth } = options
+
+    pretty = pretty && is.function( node.isInline )
+
+    const hasChildren = node.hasChildren()
+    const isElement = node.isElement()
+    let indentation = ''
+    let eol = ''
+    let openTagEol = ''
+    let closeTagIndentation = ''
+    let isAllInline = false
+
+    if( pretty ){
+      isAllInline = node.getChildren().every(
+        child => child.isInline() || child.isText()
+      )
+      const isTagIndented = hasChildren && !isAllInline
+
+      indentation = pretty ? indent.repeat( depth ) : ''
+      eol = pretty ? '\n' : ''
+      openTagEol = isTagIndented ? eol : ''
+      closeTagIndentation = isTagIndented ? indentation : ''
+    }
+
     let ml = ''
 
-    const nodeType = node.nodeType()
+    if( node.isText() ){
+      ml += indentation + text( node ) + eol
 
-    if( node.isText() )
-      ml += escapeHtml( node.nodeValue() )
+      return ml
+    }
 
-    if( node.isComment() )
-      ml += `<!--${ node.nodeValue() }-->`
+    if( node.isComment() ){
+      ml += indentation + comment( node ) + eol
 
-    if( node.isElement() ){
-      ml += `<${ node.tagName() }`
-
-      const attributes = node.getAttributes()
-
-      Object.keys( attributes ).forEach( name => {
-        const value = attributes[ name ]
-
-        ml += ` ${ name }`
-
-        if( value )
-          ml += `="${ value }"`
-      })
-
-      ml += node.isEmpty() ? ' />' : '>'
+      return ml
     }
 
     if( node.isDocumentType() ){
-      const { name, publicId, systemId } = node.getValue()
+      ml += indentation + doctype( node ) + eol
 
-      ml += `<!doctype ${ name }`
-
-      if( publicId ){
-        ml += ` public "${ publicId }"`
-      }
-
-      if( systemId ){
-        ml += ` "${ systemId }"`
-      }
-
-      ml += '>'
+      return ml
     }
 
-    node.getChildren().forEach( child =>
-      ml += child.stringify()
-    )
+    let length = 0
+    let close = ''
 
-    if( node.isElement() && !node.isEmpty() ){
-      ml += `</${ node.tagName() }>`
+    if( isElement ){
+      const open = indentation + openTag( node ) + openTagEol
+      ml += open
+      length += open.length
+
+      close = closeTagIndentation + closeTag( node ) + eol
+
+      length += close.length
     }
+
+    if( hasChildren ){
+      const children = node.getChildren()
+
+      const childMls = []
+      let childrenLength = 0
+
+      children.forEach( ( child, i ) => {
+        let options = {}
+
+        if( pretty ){
+          const isFirst = i === 0
+          const isLast = i === children.length - 1
+          const childDepth = isElement ? depth + 1 : depth
+          const isPretty = !isAllInline
+
+          options = { indent, pretty: isPretty, depth: childDepth }
+        }
+
+        const childMl = child.stringify( options )
+
+        childrenLength += childMl.length
+
+        childMls.push( childMl )
+      })
+
+      let childMl = ''
+
+      if( pretty && isAllInline && ( length + childrenLength ) > wrapAt ){
+        // for now...
+        childMl = childMls.join( '' )
+        console.log( node.tagName(), 'has contents that need wrapping' )
+      } else {
+        childMl = childMls.join( '' )
+      }
+
+      ml += childMl
+    }
+
+    ml += close
 
     return ml
   }

@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/mojule/dom-plugins#readme",
   "devDependencies": {
+    "@mojule/html": "^0.2.4",
     "@mojule/tree": "^0.6.2",
     "babel-preset-es2015": "^6.18.0",
     "gulp": "^3.9.1",

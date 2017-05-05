@@ -2,6 +2,7 @@
 
 const assert = require( 'assert' )
 const Factory = require( '@mojule/tree' ).Factory
+const is = require( '@mojule/is' )
 const plugins = require( '../src' )
 
 const Tree = Factory( plugins )
@@ -703,7 +704,7 @@ describe( 'DOM plugins', () => {
           comment( 'so silly' ),
           div(
             { id: 'myDiv' },
-            p(),
+            p( 'hi' ),
             span(
               text( 'delicious ' ),
               'cheese'
@@ -712,9 +713,45 @@ describe( 'DOM plugins', () => {
         )
       )
 
-      const expect = '<!doctype html><!--so silly--><div id="myDiv"><p></p><span>delicious cheese</span></div>'
+      const expect = '<!doctype html><!--so silly--><div id="myDiv"><p>hi</p><span>delicious cheese</span></div>'
 
       assert.equal( doc.stringify(), expect )
+    })
+
+    it( 'pretty', () => {
+      const html = require( '@mojule/html' )
+
+      const isInline = node => {
+        return {
+          isInline: () => html.isInline( node.tagName() )
+        }
+      }
+
+      const Tree = Factory( plugins.concat( isInline ) )
+
+      const h = Tree.H()
+
+      const {
+        document, documentType, documentFragment, text, comment,
+        div, p, span
+      } = h
+
+      const doc = document(
+        documentType( 'html' ),
+        documentFragment(
+          comment( 'so silly' ),
+          div(
+            { id: 'myDiv' },
+            p( 'hi' ),
+            span(
+              text( 'delicious ' ),
+              'cheese'
+            )
+          )
+        )
+      )
+
+      assert( is.string( doc.stringify( { pretty: true } ) ) )
     })
   })
 })

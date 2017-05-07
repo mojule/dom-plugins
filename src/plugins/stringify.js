@@ -57,11 +57,31 @@ const openTag = node => {
 
 const closeTag = node => node.isEmpty() ? '' : `</${ node.tagName() }>`
 
-/*
-  if has no children
-    omit eol after open tag
-    omit indentation before close tag
-*/
+const wrap = ( str, maxLength, indentation ) => {
+  maxLength = maxLength - indentation
+
+  const segs = str.split( ' ' )
+  const result = []
+  let line = []
+  let length = 0
+
+  segs.forEach( seg => {
+    if( ( length + seg.length ) >= maxLength ){
+      result.push( line.join( ' ' ) )
+      line = []
+      length = 0
+    }
+
+    length += seg.length + 1
+    line.push( seg )
+  })
+
+  if( line.length > 0 ){
+    result.push( line.join( ' ' ) )
+  }
+
+  return result.map( line => indentation + line + '\n' ).join( '' )
+}
 
 const stringify = node => {
   const stringify = ( options = {} ) => {
@@ -128,7 +148,7 @@ const stringify = node => {
     if( hasChildren ){
       const children = node.getChildren()
 
-      const childMls = []
+      let childMls = ''
       let childrenLength = 0
 
       children.forEach( ( child, i ) => {
@@ -147,20 +167,22 @@ const stringify = node => {
 
         childrenLength += childMl.length
 
-        childMls.push( childMl )
+        childMls += childMl
       })
 
-      let childMl = ''
-
       if( pretty && isAllInline && ( length + childrenLength ) > wrapAt ){
-        // for now...
-        childMl = childMls.join( '' )
-        console.log( node.tagName(), 'has contents that need wrapping' )
-      } else {
-        childMl = childMls.join( '' )
-      }
+        ml += eol
 
-      ml += childMl
+        const childIndentation = indent.repeat( depth + 1 )
+
+        childMls = wrap( childMls, wrapAt, childIndentation )
+
+        ml += childMls
+
+        ml += indentation
+      } else {
+        ml += childMls
+      }
     }
 
     ml += close

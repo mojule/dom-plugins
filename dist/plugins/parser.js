@@ -9,7 +9,8 @@ var defaultOptions = {
     normal mode
   */
   xmlMode: true,
-  removeWhitespace: false
+  removeWhitespace: false,
+  trimText: false
 };
 
 var parser = function parser(node) {
@@ -28,6 +29,14 @@ var parser = function parser(node) {
 
       if (options.removeWhitespace) dom.prune(function (current) {
         return current.isText() && current.nodeValue().trim() === '';
+      });
+
+      if (options.trimText) dom.walk(function (current) {
+        if (!current.isText()) return;
+
+        var text = current.nodeValue();
+
+        current.nodeValue(text.trim());
       });
 
       var isSingleElement = dom.isDocumentFragment() && dom.getChildren().length === 1;

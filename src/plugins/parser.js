@@ -2,6 +2,7 @@
 
 const htmlparser2 = require( 'htmlparser2' )
 const DomHandler = require( '../domhandler-adapter' )
+const preserveWhitespace = require( './preserve-whitespace' )
 
 const defaultOptions = {
   /*
@@ -10,7 +11,10 @@ const defaultOptions = {
   */
   xmlMode: true,
   removeWhitespace: false,
-  trimText: false
+  trimText: false,
+  normalizeWhitespace: false,
+  ignoreWhitespace: false,
+  preserveWhitespace
 }
 
 const parser = node => {
@@ -25,19 +29,7 @@ const parser = node => {
 
       const dom = handler.getDom()
 
-      if( options.removeWhitespace )
-        dom.prune( current =>
-          current.isText() && current.nodeValue().trim() === ''
-        )
-
-      if( options.trimText )
-        dom.walk( current => {
-          if( !current.isText() ) return
-
-          const text = current.nodeValue()
-
-          current.nodeValue( text.trim() )
-        })
+      dom.whitespace( options )
 
       const isSingleElement =
         dom.isDocumentFragment() && dom.getChildren().length === 1

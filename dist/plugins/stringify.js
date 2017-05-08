@@ -2,6 +2,7 @@
 
 var is = require('@mojule/is');
 var utils = require('@mojule/utils');
+var preserveWhitespace = require('./preserve-whitespace');
 
 var escapeHtml = utils.escapeHtml;
 
@@ -10,7 +11,12 @@ var defaultOptions = {
   indent: '  ',
   pretty: false,
   depth: 0,
-  wrapAt: 80
+  wrapAt: 80,
+  preserveWhitespace: preserveWhitespace,
+  removeWhitespace: true,
+  ignoreWhitespace: true,
+  trimText: true,
+  normalizeWhitespace: true
 };
 
 var text = function text(node) {
@@ -67,7 +73,7 @@ var closeTag = function closeTag(node) {
 };
 
 var wrap = function wrap(str, maxLength, indentation) {
-  maxLength = maxLength - indentation;
+  maxLength = maxLength - indentation.length;
 
   var segs = str.split(' ');
   var result = [];
@@ -85,9 +91,7 @@ var wrap = function wrap(str, maxLength, indentation) {
     line.push(seg);
   });
 
-  if (line.length > 0) {
-    result.push(line.join(' '));
-  }
+  result.push(line.join(' '));
 
   return result.map(function (line) {
     return indentation + line + '\n';
@@ -102,7 +106,8 @@ var stringify = function stringify(node) {
 
     var _options = options,
         indent = _options.indent,
-        wrapAt = _options.wrapAt;
+        wrapAt = _options.wrapAt,
+        preserveWhitespace = _options.preserveWhitespace;
     var _options2 = options,
         pretty = _options2.pretty,
         depth = _options2.depth;
@@ -117,6 +122,7 @@ var stringify = function stringify(node) {
     var openTagEol = '';
     var closeTagIndentation = '';
     var isAllInline = false;
+    var isWrappableTag = false;
 
     if (pretty) {
       isAllInline = node.getChildren().every(function (child) {
@@ -124,10 +130,13 @@ var stringify = function stringify(node) {
       });
       var isTagIndented = hasChildren && !isAllInline;
 
-      indentation = pretty ? indent.repeat(depth) : '';
-      eol = pretty ? '\n' : '';
+      indentation = indent.repeat(depth);
+      eol = '\n';
       openTagEol = isTagIndented ? eol : '';
       closeTagIndentation = isTagIndented ? indentation : '';
+      isWrappableTag = isAllInline && !preserveWhitespace.includes(node.tagName());
+
+      node.whitespace(options);
     }
 
     var ml = '';
@@ -188,7 +197,7 @@ var stringify = function stringify(node) {
         childMls += childMl;
       });
 
-      if (pretty && isAllInline && length + childrenLength > wrapAt) {
+      if (pretty && isWrappableTag && length + childrenLength > wrapAt) {
         ml += eol;
 
         var childIndentation = indent.repeat(depth + 1);

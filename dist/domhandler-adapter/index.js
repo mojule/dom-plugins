@@ -15,8 +15,6 @@ var defaultOpts = {
   normalizeWhitespace: false
 };
 
-var whitespace = /\s+/g;
-
 var State = function State(nodeApi, options) {
   options = Object.assign({}, defaultOpts, options);
 
@@ -64,8 +62,6 @@ var Api = function Api(handler) {
   };
 
   var ontext = function ontext(data) {
-    if (options.normalizeWhitespace || options.ignoreWhitespace) data = data.replace(whitespace, ' ');
-
     var text = nodeApi.createText(data);
 
     addDomNode(handler, text);

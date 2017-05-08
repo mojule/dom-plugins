@@ -719,11 +719,11 @@ describe( 'DOM plugins', () => {
     })
 
     it( 'pretty', () => {
-      const html = require( '@mojule/html' )
+      const Html = require( '@mojule/html' )
 
       const isInline = node => {
         return {
-          isInline: () => html.isInline( node.tagName() )
+          isInline: () => Html.isInline( node.tagName() )
         }
       }
 
@@ -732,26 +732,64 @@ describe( 'DOM plugins', () => {
       const h = Tree.H()
 
       const {
-        document, documentType, documentFragment, text, comment,
-        div, p, span
+        document, documentType, html, head, title, body, style, script, pre,
+        textarea, documentFragment, text, comment, div, p, span
       } = h
 
       const doc = document(
         documentType( 'html' ),
-        documentFragment(
-          comment( 'so silly' ),
-          div(
-            { id: 'myDiv' },
-            p( 'hi' ),
-            span(
-              text( 'delicious ' ),
-              'cheese'
-            )
+        html(
+          head(
+            title( 'Hello' ),
+            style( '\n    /*  style  */\n    ' )
+          ),
+          body(
+            documentFragment(
+              comment( 'so silly' ),
+              div(
+                { id: 'myDiv' },
+                p( 'hi' ),
+                p( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse suscipit molestie dui, eu volutpat ex posuere sit amet. Interdum et malesuada fames ac ante ipsum primis in faucibus.' ),
+                span(
+                  text( 'delicious ' ),
+                  'cheese'
+                ),
+                textarea( '  Hello\n\n' )
+              )
+            ),
+            script( '/*   script   */' )
           )
         )
       )
 
-      assert( is.string( doc.stringify( { pretty: true } ) ) )
+      const expect = `<!doctype html>
+<html>
+  <head>
+    <title>Hello</title>
+    <style>
+    /*  style  */
+    </style>
+  </head>
+  <body>
+    <!--so silly-->
+    <div id="myDiv">
+      <p>hi</p>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+        suscipit molestie dui, eu volutpat ex posuere sit amet. Interdum et
+        malesuada fames ac ante ipsum primis in faucibus.
+      </p>
+      <span>delicious cheese</span>
+      <textarea>  Hello
+
+</textarea>
+    </div>
+    <script>/*   script   */</script>
+  </body>
+</html>
+`
+
+      assert.equal( doc.stringify( { pretty: true } ), expect )
     })
   })
 })

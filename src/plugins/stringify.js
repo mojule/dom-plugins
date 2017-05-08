@@ -2,6 +2,7 @@
 
 const is = require( '@mojule/is' )
 const utils = require( '@mojule/utils' )
+const preserveWhitespace = require( './preserve-whitespace' )
 
 const { escapeHtml } = utils
 
@@ -9,7 +10,12 @@ const defaultOptions = {
   indent: '  ',
   pretty: false,
   depth: 0,
-  wrapAt: 80
+  wrapAt: 80,
+  preserveWhitespace,
+  removeWhitespace: true,
+  ignoreWhitespace: true,
+  trimText: true,
+  normalizeWhitespace: true
 }
 
 const text = node => escapeHtml( node.nodeValue() )
@@ -58,7 +64,7 @@ const openTag = node => {
 const closeTag = node => node.isEmpty() ? '' : `</${ node.tagName() }>`
 
 const wrap = ( str, maxLength, indentation ) => {
-  maxLength = maxLength - indentation
+  maxLength = maxLength - indentation.length
 
   const segs = str.split( ' ' )
   const result = []
@@ -76,9 +82,7 @@ const wrap = ( str, maxLength, indentation ) => {
     line.push( seg )
   })
 
-  if( line.length > 0 ){
-    result.push( line.join( ' ' ) )
-  }
+  result.push( line.join( ' ' ) )
 
   return result.map( line => indentation + line + '\n' ).join( '' )
 }
@@ -87,7 +91,7 @@ const stringify = node => {
   const stringify = ( options = {} ) => {
     options = Object.assign( {}, defaultOptions, options )
 
-    const { indent, wrapAt } = options
+    const { indent, wrapAt, preserveWhitespace } = options
     let { pretty, depth } = options
 
     pretty = pretty && is.function( node.isInline )
@@ -99,6 +103,7 @@ const stringify = node => {
     let openTagEol = ''
     let closeTagIndentation = ''
     let isAllInline = false
+    let isWrappableTag = false
 
     if( pretty ){
       isAllInline = node.getChildren().every(
@@ -106,10 +111,14 @@ const stringify = node => {
       )
       const isTagIndented = hasChildren && !isAllInline
 
-      indentation = pretty ? indent.repeat( depth ) : ''
-      eol = pretty ? '\n' : ''
+      indentation = indent.repeat( depth )
+      eol = '\n'
       openTagEol = isTagIndented ? eol : ''
       closeTagIndentation = isTagIndented ? indentation : ''
+      isWrappableTag = isAllInline &&
+        !preserveWhitespace.includes( node.tagName() )
+
+      node.whitespace( options )
     }
 
     let ml = ''
@@ -170,7 +179,7 @@ const stringify = node => {
         childMls += childMl
       })
 
-      if( pretty && isAllInline && ( length + childrenLength ) > wrapAt ){
+      if( pretty && isWrappableTag && ( length + childrenLength ) > wrapAt ){
         ml += eol
 
         const childIndentation = indent.repeat( depth + 1 )

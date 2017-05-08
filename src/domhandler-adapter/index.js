@@ -15,8 +15,6 @@ const defaultOpts = {
   normalizeWhitespace: false
 }
 
-const whitespace = /\s+/g
-
 const State = ( nodeApi, options ) => {
   options = Object.assign( {}, defaultOpts, options )
 
@@ -57,9 +55,6 @@ const Api = handler => {
   }
 
   const ontext = data => {
-    if( options.normalizeWhitespace || options.ignoreWhitespace )
-      data = data.replace( whitespace, ' ' )
-
     const text = nodeApi.createText( data )
 
     addDomNode( handler, text )

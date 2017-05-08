@@ -14,5 +14,6 @@ var parser = require('./plugins/parser');
 var select = require('./plugins/select');
 var stringify = require('./plugins/stringify');
 var treeType = require('./plugins/treeType');
+var whitespace = require('./plugins/whitespace');
 
-module.exports = [isType, attributes, classes, createNodes, dataset, getText, hFactory, isEmpty, isType, name, nodeValue, parser, select, stringify, treeType];
+module.exports = [isType, attributes, classes, createNodes, dataset, getText, hFactory, isEmpty, isType, name, nodeValue, parser, select, stringify, treeType, whitespace];

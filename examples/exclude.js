@@ -3,7 +3,7 @@
 const html = require( '@mojule/html' )
 const { Factory } = require( '@mojule/tree' )
 const domPlugins = require( '../src' )
-const doc = require( './doc' )
+const doc = require( './excludeDoc' )
 
 const isInline = node => {
   return {

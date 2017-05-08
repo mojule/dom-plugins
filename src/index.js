@@ -14,8 +14,9 @@ const parser = require( './plugins/parser' )
 const select = require( './plugins/select' )
 const stringify = require( './plugins/stringify' )
 const treeType = require( './plugins/treeType' )
+const whitespace = require( './plugins/whitespace' )
 
 module.exports = [
-  isType, attributes, classes, createNodes, dataset, getText, hFactory, isEmpty, 
-  isType, name, nodeValue, parser, select, stringify, treeType
+  isType, attributes, classes, createNodes, dataset, getText, hFactory, isEmpty,
+  isType, name, nodeValue, parser, select, stringify, treeType, whitespace
 ]

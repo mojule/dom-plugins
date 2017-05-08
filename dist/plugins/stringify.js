@@ -9,14 +9,35 @@ var escapeHtml = utils.escapeHtml;
 
 var defaultOptions = {
   indent: '  ',
+  eol: '\n',
   pretty: false,
   depth: 0,
   wrapAt: 80,
   preserveWhitespace: preserveWhitespace,
-  removeWhitespace: true,
-  ignoreWhitespace: true,
-  trimText: true,
   normalizeWhitespace: true
+};
+
+var stringify = function stringify(node) {
+  return {
+    stringify: function stringify() {
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      options = Object.assign({}, defaultOptions, options);
+
+      var isPretty = options.pretty && is.function(node.isInline);
+
+      var arr = [];
+
+      if (isPretty) {
+        node.whitespace(options);
+        addPretty(arr, node, options);
+      } else {
+        addNode(arr, node);
+      }
+
+      return arr.join('');
+    }
+  };
 };
 
 var text = function text(node) {
@@ -72,10 +93,154 @@ var closeTag = function closeTag(node) {
   return node.isEmpty() ? '' : '</' + node.tagName() + '>';
 };
 
-var wrap = function wrap(str, maxLength, indentation) {
-  maxLength = maxLength - indentation.length;
+var addNode = function addNode(arr, node) {
+  var isElement = node.isElement();
 
-  var segs = str.split(' ');
+  if (node.isText()) {
+    arr.push(text(node));
+
+    return;
+  }
+
+  if (node.isComment()) {
+    arr.push(comment(node));
+
+    return;
+  }
+
+  if (node.isDocumentType()) {
+    arr.push(doctype(node));
+
+    return;
+  }
+
+  if (isElement) {
+    arr.push(openTag(node));
+  }
+
+  node.getChildren().forEach(function (child) {
+    addNode(arr, child);
+  });
+
+  if (isElement && !node.isEmpty()) {
+    arr.push(closeTag(node));
+  }
+};
+
+var addPretty = function addPretty(arr, node, options) {
+  var depth = options.depth,
+      indent = options.indent,
+      eol = options.eol,
+      wrapAt = options.wrapAt,
+      preserveWhitespace = options.preserveWhitespace;
+
+
+  var isElement = node.isElement();
+  var indentation = indent.repeat(depth);
+
+  if (node.isText()) {
+    arr.push(indentation + text(node) + eol);
+
+    return;
+  }
+
+  if (node.isComment()) {
+    arr.push(indentation + comment(node) + eol);
+
+    return;
+  }
+
+  if (node.isDocumentType()) {
+    arr.push(indentation + doctype(node) + eol);
+
+    return;
+  }
+
+  if (!node.isElement()) {
+    node.getChildren().forEach(function (child) {
+      addPretty(arr, child, options);
+    });
+
+    return;
+  }
+
+  if (preserveWhitespace.includes(node.tagName())) {
+    arr.push(indentation + openTag(node));
+
+    node.getChildren().forEach(function (child) {
+      return addNode(arr, child);
+    });
+
+    arr.push(closeTag(node) + eol);
+
+    return;
+  }
+
+  var isAllInline = node.getChildren().every(function (child) {
+    return child.isInline() || child.isText();
+  });
+
+  var childOptions = Object.assign({}, options, { depth: depth + 1 });
+
+  if (!isAllInline) {
+    arr.push(indentation + openTag(node) + eol);
+
+    node.getChildren().forEach(function (child) {
+      return addPretty(arr, child, childOptions);
+    });
+
+    arr.push(indentation + closeTag(node) + eol);
+
+    return;
+  }
+
+  var open = openTag(node);
+  var close = closeTag(node);
+
+  var children = [];
+
+  node.getChildren().forEach(function (child) {
+    addNode(children, child);
+  });
+
+  var childLength = children.reduce(function (sum, child) {
+    return sum + child.length;
+  }, 0);
+
+  var length = indentation.length + open.length + childLength + close.length;
+
+  if (length <= wrapAt) {
+    var el = indentation + open + children.join('') + close + eol;
+
+    arr.push(el);
+
+    return;
+  }
+
+  arr.push(indentation + open + eol);
+  pushWrapped(arr, children, childOptions);
+  arr.push(indentation + close + eol);
+};
+
+var pushWrapped = function pushWrapped(arr, children, options) {
+  var depth = options.depth,
+      indent = options.indent,
+      eol = options.eol,
+      wrapAt = options.wrapAt;
+
+  var indentation = indent.repeat(depth);
+  var maxLength = wrapAt - indentation.length;
+
+  var segs = children.map(function (child, i) {
+    if (child.startsWith('<')) {
+      return child.replace(/ /g, '\\U0020');
+    }
+
+    if (i === 0) return child.replace(/^\s/g, '');
+
+    return child;
+  }).join('').split(' ');
+
   var result = [];
   var line = [];
   var length = 0;
@@ -93,131 +258,9 @@ var wrap = function wrap(str, maxLength, indentation) {
 
   result.push(line.join(' '));
 
-  return result.map(function (line) {
-    return indentation + line + '\n';
-  }).join('');
-};
-
-var stringify = function stringify(node) {
-  var stringify = function stringify() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    options = Object.assign({}, defaultOptions, options);
-
-    var _options = options,
-        indent = _options.indent,
-        wrapAt = _options.wrapAt,
-        preserveWhitespace = _options.preserveWhitespace;
-    var _options2 = options,
-        pretty = _options2.pretty,
-        depth = _options2.depth;
-
-
-    pretty = pretty && is.function(node.isInline);
-
-    var hasChildren = node.hasChildren();
-    var isElement = node.isElement();
-    var indentation = '';
-    var eol = '';
-    var openTagEol = '';
-    var closeTagIndentation = '';
-    var isAllInline = false;
-    var isWrappableTag = false;
-
-    if (pretty) {
-      isAllInline = node.getChildren().every(function (child) {
-        return child.isInline() || child.isText();
-      });
-      var isTagIndented = hasChildren && !isAllInline;
-
-      indentation = indent.repeat(depth);
-      eol = '\n';
-      openTagEol = isTagIndented ? eol : '';
-      closeTagIndentation = isTagIndented ? indentation : '';
-      isWrappableTag = isAllInline && !preserveWhitespace.includes(node.tagName());
-
-      node.whitespace(options);
-    }
-
-    var ml = '';
-
-    if (node.isText()) {
-      ml += indentation + text(node) + eol;
-
-      return ml;
-    }
-
-    if (node.isComment()) {
-      ml += indentation + comment(node) + eol;
-
-      return ml;
-    }
-
-    if (node.isDocumentType()) {
-      ml += indentation + doctype(node) + eol;
-
-      return ml;
-    }
-
-    var length = 0;
-    var close = '';
-
-    if (isElement) {
-      var open = indentation + openTag(node) + openTagEol;
-      ml += open;
-      length += open.length;
-
-      close = closeTagIndentation + closeTag(node) + eol;
-
-      length += close.length;
-    }
-
-    if (hasChildren) {
-      var children = node.getChildren();
-
-      var childMls = '';
-      var childrenLength = 0;
-
-      children.forEach(function (child, i) {
-        var options = {};
-
-        if (pretty) {
-          var isFirst = i === 0;
-          var isLast = i === children.length - 1;
-          var childDepth = isElement ? depth + 1 : depth;
-          var isPretty = !isAllInline;
-
-          options = { indent: indent, pretty: isPretty, depth: childDepth };
-        }
-
-        var childMl = child.stringify(options);
-
-        childrenLength += childMl.length;
-
-        childMls += childMl;
-      });
-
-      if (pretty && isWrappableTag && length + childrenLength > wrapAt) {
-        ml += eol;
-
-        var childIndentation = indent.repeat(depth + 1);
-
-        childMls = wrap(childMls, wrapAt, childIndentation);
-
-        ml += childMls;
-
-        ml += indentation;
-      } else {
-        ml += childMls;
-      }
-    }
-
-    ml += close;
-
-    return ml;
-  };
-
-  return { stringify: stringify };
+  arr.push(result.map(function (line) {
+    return indentation + line + eol;
+  }).join('').replace(/\\U0020/g, ' '));
 };
 
 module.exports = stringify;

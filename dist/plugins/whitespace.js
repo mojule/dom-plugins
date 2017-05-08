@@ -5,7 +5,6 @@ var preserveWhitespace = require('./preserve-whitespace');
 var defaultOptions = {
   removeWhitespace: false,
   ignoreWhitespace: false,
-  trimText: false,
   normalizeWhitespace: false,
   preserveWhitespace: preserveWhitespace
 };
@@ -39,11 +38,10 @@ var whitespace = function whitespace(node) {
           preserveWhitespace = _options.preserveWhitespace,
           removeWhitespace = _options.removeWhitespace,
           normalizeWhitespace = _options.normalizeWhitespace,
-          ignoreWhitespace = _options.ignoreWhitespace,
-          trimText = _options.trimText;
+          ignoreWhitespace = _options.ignoreWhitespace;
 
 
-      var isHandleWhitespace = removeWhitespace || trimText || normalizeWhitespace || ignoreWhitespace;
+      var isHandleWhitespace = removeWhitespace || normalizeWhitespace || ignoreWhitespace;
 
       if (isHandleWhitespace) {
         var next = function next(current) {
@@ -61,12 +59,6 @@ var whitespace = function whitespace(node) {
               var text = current.nodeValue().replace(whitespaceTest, ' ');
 
               current.nodeValue(text);
-            }
-
-            if (trimText) {
-              var _text = current.nodeValue();
-
-              current.nodeValue(_text.trim());
             }
           } else {
             current.getChildren().forEach(next);

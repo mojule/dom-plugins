@@ -15,7 +15,6 @@ const Tree = Factory( domPlugins.concat( isInline ) )
 
 const tree = Tree.parse( doc, {
   removeWhitespace: true,
-  trimText: true,
   xmlMode: false
 })
 

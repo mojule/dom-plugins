@@ -723,7 +723,8 @@ describe( 'DOM plugins', () => {
 
       const isInline = node => {
         return {
-          isInline: () => Html.isInline( node.tagName() )
+          isInline: () => Html.isInline( node.tagName() ),
+          isEmpty: () => Html.isEmpty( node.nodeName() )
         }
       }
 
@@ -732,14 +733,15 @@ describe( 'DOM plugins', () => {
       const h = Tree.H()
 
       const {
-        document, documentType, html, head, title, body, style, script, pre,
-        textarea, documentFragment, text, comment, div, p, span
+        document, documentType, html, head, meta, title, body, style, script,
+        pre, textarea, documentFragment, text, comment, div, p, span, strong
       } = h
 
       const doc = document(
         documentType( 'html' ),
         html(
           head(
+            meta( { charset: 'utf-8' } ),
             title( 'Hello' ),
             style( '\n    /*  style  */\n    ' )
           ),
@@ -749,7 +751,11 @@ describe( 'DOM plugins', () => {
               div(
                 { id: 'myDiv' },
                 p( 'hi' ),
-                p( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse suscipit molestie dui, eu volutpat ex posuere sit amet. Interdum et malesuada fames ac ante ipsum primis in faucibus.' ),
+                p(
+                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ',
+                  strong( 'Suspendisse suscipit molestie dui' ),
+                  ', eu volutpat ex posuere sit amet. Interdum et malesuada fames ac ante ipsum primis in faucibus.'
+                ),
                 span(
                   text( 'delicious ' ),
                   'cheese'
@@ -765,6 +771,7 @@ describe( 'DOM plugins', () => {
       const expect = `<!doctype html>
 <html>
   <head>
+    <meta charset="utf-8" />
     <title>Hello</title>
     <style>
     /*  style  */
@@ -775,9 +782,10 @@ describe( 'DOM plugins', () => {
     <div id="myDiv">
       <p>hi</p>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-        suscipit molestie dui, eu volutpat ex posuere sit amet. Interdum et
-        malesuada fames ac ante ipsum primis in faucibus.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        <strong>Suspendisse suscipit molestie dui</strong>, eu volutpat ex
+        posuere sit amet. Interdum et malesuada fames ac ante ipsum primis in
+        faucibus.
       </p>
       <span>delicious cheese</span>
       <textarea>  Hello
@@ -790,6 +798,10 @@ describe( 'DOM plugins', () => {
 `
 
       assert.equal( doc.stringify( { pretty: true } ), expect )
+
+      const textOnly = text( 'Hello World!' )
+
+      assert.equal( textOnly.stringify( { pretty: true } ), 'Hello World!\n' )
     })
   })
 })

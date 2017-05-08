@@ -11,7 +11,6 @@ const defaultOptions = {
   */
   xmlMode: true,
   removeWhitespace: false,
-  trimText: false,
   normalizeWhitespace: false,
   ignoreWhitespace: false,
   preserveWhitespace

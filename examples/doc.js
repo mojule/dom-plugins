@@ -45,7 +45,8 @@ body {
       <p>
         Lorem <strong>ipsum dolor</strong> sit amet, consectetur adipiscing
         elit. Suspendisse suscipit molestie dui, eu volutpat ex posuere sit
-        amet. Interdum et malesuada fames ac ante ipsum primis in faucibus.
+        amet. Interdum et malesuada fames ac ante <strong lots="of" long="attributes with spaces in them and etc  OK should wrap">ipsum
+        primis</strong> in faucibus.
       </p>
       <textarea>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse suscipit molestie dui, eu volutpat ex posuere sit amet. Interdum et malesuada fames ac ante ipsum primis in faucibus.</textarea>
     </main>

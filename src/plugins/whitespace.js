@@ -5,7 +5,6 @@ const preserveWhitespace = require( './preserve-whitespace' )
 const defaultOptions = {
   removeWhitespace: false,
   ignoreWhitespace: false,
-  trimText: false,
   normalizeWhitespace: false,
   preserveWhitespace
 }
@@ -37,11 +36,11 @@ const whitespace = node => {
 
       const {
         preserveWhitespace, removeWhitespace, normalizeWhitespace,
-        ignoreWhitespace, trimText
+        ignoreWhitespace
       } = options
 
       const isHandleWhitespace = (
-        removeWhitespace || trimText || normalizeWhitespace || ignoreWhitespace
+        removeWhitespace || normalizeWhitespace || ignoreWhitespace
       )
 
       if( isHandleWhitespace ){
@@ -60,12 +59,6 @@ const whitespace = node => {
               const text = current.nodeValue().replace( whitespaceTest, ' ' )
 
               current.nodeValue( text )
-            }
-
-            if( trimText ){
-              const text = current.nodeValue()
-
-              current.nodeValue( text.trim() )
             }
           } else {
             current.getChildren().forEach( next )

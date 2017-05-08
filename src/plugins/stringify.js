@@ -8,14 +8,33 @@ const { escapeHtml } = utils
 
 const defaultOptions = {
   indent: '  ',
+  eol: '\n',
   pretty: false,
   depth: 0,
   wrapAt: 80,
   preserveWhitespace,
-  removeWhitespace: true,
-  ignoreWhitespace: true,
-  trimText: true,
   normalizeWhitespace: true
+}
+
+const stringify = node => {
+  return {
+    stringify: ( options = {} ) => {
+      options = Object.assign( {}, defaultOptions, options )
+
+      const isPretty = options.pretty && is.function( node.isInline )
+
+      const arr = []
+
+      if( isPretty ){
+        node.whitespace( options )
+        addPretty( arr, node, options )
+      } else {
+        addNode( arr, node )
+      }
+
+      return arr.join( '' )
+    }
+  }
 }
 
 const text = node => escapeHtml( node.nodeValue() )
@@ -63,10 +82,146 @@ const openTag = node => {
 
 const closeTag = node => node.isEmpty() ? '' : `</${ node.tagName() }>`
 
-const wrap = ( str, maxLength, indentation ) => {
-  maxLength = maxLength - indentation.length
+const addNode = ( arr, node ) => {
+  const isElement = node.isElement()
 
-  const segs = str.split( ' ' )
+  if( node.isText() ){
+    arr.push( text( node ) )
+
+    return
+  }
+
+  if( node.isComment() ){
+    arr.push( comment( node ) )
+
+    return
+  }
+
+  if( node.isDocumentType() ){
+    arr.push( doctype( node ) )
+
+    return
+  }
+
+  if( isElement ){
+    arr.push( openTag( node ) )
+  }
+
+  node.getChildren().forEach( child => {
+    addNode( arr, child )
+  })
+
+  if( isElement && !node.isEmpty() ){
+    arr.push( closeTag( node ) )
+  }
+}
+
+const addPretty = ( arr, node, options ) => {
+  const { depth, indent, eol, wrapAt, preserveWhitespace } = options
+
+  const isElement = node.isElement()
+  const indentation = indent.repeat( depth )
+
+  if( node.isText() ){
+    arr.push( indentation + text( node ) + eol )
+
+    return
+  }
+
+  if( node.isComment() ){
+    arr.push( indentation + comment( node ) + eol )
+
+    return
+  }
+
+  if( node.isDocumentType() ){
+    arr.push( indentation + doctype( node ) + eol )
+
+    return
+  }
+
+  if( !node.isElement() ){
+    node.getChildren().forEach( child => {
+      addPretty( arr, child, options )
+    })
+
+    return
+  }
+
+  if( preserveWhitespace.includes( node.tagName() ) ){
+    arr.push( indentation + openTag( node ) )
+
+    node.getChildren().forEach( child =>
+      addNode( arr, child )
+    )
+
+    arr.push( closeTag( node ) + eol )
+
+    return
+  }
+
+  const isAllInline = node.getChildren().every(
+    child => child.isInline() || child.isText()
+  )
+
+  const childOptions = Object.assign( {}, options, { depth: depth + 1 } )
+
+  if( !isAllInline ){
+    arr.push( indentation + openTag( node ) + eol )
+
+    node.getChildren().forEach( child =>
+      addPretty( arr, child, childOptions )
+    )
+
+    arr.push( indentation + closeTag( node ) + eol )
+
+    return
+  }
+
+  const open = openTag( node )
+  const close = closeTag( node )
+
+  const children = []
+
+  node.getChildren().forEach( child => {
+    addNode( children, child )
+  })
+
+  const childLength = children.reduce( ( sum, child ) => {
+    return sum + child.length
+  }, 0 )
+
+  const length = indentation.length + open.length + childLength + close.length
+
+  if( length <= wrapAt ){
+    const el = indentation + open + children.join( '' ) + close + eol
+
+    arr.push( el )
+
+    return
+  }
+
+  arr.push( indentation + open + eol )
+  pushWrapped( arr, children, childOptions )
+  arr.push( indentation + close + eol )
+}
+
+const pushWrapped = ( arr, children, options ) => {
+  const { depth, indent, eol, wrapAt } = options
+  const indentation = indent.repeat( depth )
+  const maxLength = wrapAt - indentation.length
+
+  const segs = children.map( ( child, i ) => {
+    if( child.startsWith( '<' ) ){
+      return child.replace( / /g, '\\U0020' )
+    }
+
+    if( i === 0 )
+      return child.replace( /^\s/g, '' )
+
+    return child
+  }).join( '' ).split( ' ' )
+
   const result = []
   let line = []
   let length = 0
@@ -84,122 +239,12 @@ const wrap = ( str, maxLength, indentation ) => {
 
   result.push( line.join( ' ' ) )
 
-  return result.map( line => indentation + line + '\n' ).join( '' )
-}
-
-const stringify = node => {
-  const stringify = ( options = {} ) => {
-    options = Object.assign( {}, defaultOptions, options )
-
-    const { indent, wrapAt, preserveWhitespace } = options
-    let { pretty, depth } = options
-
-    pretty = pretty && is.function( node.isInline )
-
-    const hasChildren = node.hasChildren()
-    const isElement = node.isElement()
-    let indentation = ''
-    let eol = ''
-    let openTagEol = ''
-    let closeTagIndentation = ''
-    let isAllInline = false
-    let isWrappableTag = false
-
-    if( pretty ){
-      isAllInline = node.getChildren().every(
-        child => child.isInline() || child.isText()
-      )
-      const isTagIndented = hasChildren && !isAllInline
-
-      indentation = indent.repeat( depth )
-      eol = '\n'
-      openTagEol = isTagIndented ? eol : ''
-      closeTagIndentation = isTagIndented ? indentation : ''
-      isWrappableTag = isAllInline &&
-        !preserveWhitespace.includes( node.tagName() )
-
-      node.whitespace( options )
-    }
-
-    let ml = ''
-
-    if( node.isText() ){
-      ml += indentation + text( node ) + eol
-
-      return ml
-    }
-
-    if( node.isComment() ){
-      ml += indentation + comment( node ) + eol
-
-      return ml
-    }
-
-    if( node.isDocumentType() ){
-      ml += indentation + doctype( node ) + eol
-
-      return ml
-    }
-
-    let length = 0
-    let close = ''
-
-    if( isElement ){
-      const open = indentation + openTag( node ) + openTagEol
-      ml += open
-      length += open.length
-
-      close = closeTagIndentation + closeTag( node ) + eol
-
-      length += close.length
-    }
-
-    if( hasChildren ){
-      const children = node.getChildren()
-
-      let childMls = ''
-      let childrenLength = 0
-
-      children.forEach( ( child, i ) => {
-        let options = {}
-
-        if( pretty ){
-          const isFirst = i === 0
-          const isLast = i === children.length - 1
-          const childDepth = isElement ? depth + 1 : depth
-          const isPretty = !isAllInline
-
-          options = { indent, pretty: isPretty, depth: childDepth }
-        }
-
-        const childMl = child.stringify( options )
-
-        childrenLength += childMl.length
-
-        childMls += childMl
-      })
-
-      if( pretty && isWrappableTag && ( length + childrenLength ) > wrapAt ){
-        ml += eol
-
-        const childIndentation = indent.repeat( depth + 1 )
-
-        childMls = wrap( childMls, wrapAt, childIndentation )
-
-        ml += childMls
-
-        ml += indentation
-      } else {
-        ml += childMls
-      }
-    }
-
-    ml += close
-
-    return ml
-  }
-
-  return { stringify }
+  arr.push(
+    result
+      .map( line => indentation + line + eol )
+      .join( '' )
+      .replace( /\\U0020/g, ' ' )
+  )
 }
 
 module.exports = stringify

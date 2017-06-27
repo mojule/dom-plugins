@@ -632,10 +632,10 @@ describe( 'DOM plugins', () => {
     })
 
     it( 'removeWhitespace', () => {
-      const html = '  <div>Hello</div>  <span>World</span>'
+      const html = '\n  <div>Hello</div> <p>  \n  </p> <span>World</span>  \n  '
       const n = Tree.parse( html, { removeWhitespace: true } )
 
-      assert.equal( n.stringify(), '<div>Hello</div><span>World</span>' )
+      assert.equal( n.stringify(), '<div>Hello</div><p></p><span>World</span>' )
     })
 
     it( 'ignoreWhitespace', () => {

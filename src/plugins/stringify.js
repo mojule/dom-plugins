@@ -212,9 +212,9 @@ const pushWrapped = ( arr, children, options ) => {
   const maxLength = wrapAt - indentation.length
 
   const segs = children.map( ( child, i ) => {
-    if( child.startsWith( '<' ) ){
+    // escape spaces within tags so they don't partake in wrapping
+    if( child.startsWith( '<' ) )
       return child.replace( / /g, '\\U0020' )
-    }
 
     if( i === 0 )
       return child.replace( /^\s/g, '' )
@@ -243,6 +243,7 @@ const pushWrapped = ( arr, children, options ) => {
     result
       .map( line => indentation + line + eol )
       .join( '' )
+      // replace previously escaped spaces within tags
       .replace( /\\U0020/g, ' ' )
   )
 }

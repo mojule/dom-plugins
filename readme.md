@@ -1,7 +1,7 @@
 # DOM plugins
 
-A set of plugins for mojule [tree](https://github.com/mojule/tree) that lets you 
-treat any tree as a DOM, allowing you to do interesting things like run query 
+A set of plugins for mojule [tree](https://github.com/mojule/tree) that lets you
+treat any tree as a DOM, allowing you to do interesting things like run query
 selectors over your tree even if the nodes don't represent HTML elements.
 
 ## Install
@@ -95,11 +95,11 @@ doc.walk( ( current, parent, depth ) => {
 ```
 
 ```
- backpack
-   lunchbox
-     apple
-   pamphlet
-     #text
+backpack
+  lunchbox
+    apple
+  pamphlet
+    #text
 ```
 
 ### Query selectors
@@ -340,11 +340,11 @@ console.log( node.attributes() )
 
 #### valueToAttributes
 
-A static helper function that can be used to back a custom `getAttributes` 
+A static helper function that can be used to back a custom `getAttributes`
 plugin.
 
 Takes a node value object, [flattens](https://github.com/mojule/flatten) it,
-converts the keys to be suitable for use in attributes, by replacing `.` with 
+converts the keys to be suitable for use in attributes, by replacing `.` with
 `_` and indices like `[0]` with `-0`, and if the value is not a string, appends
 a suffix indicating the type, like `-number`.
 
@@ -382,8 +382,8 @@ console.log( Tree.valueToAttributes( value ) )
 
 #### attributesToValue
 
-Converts an attributes value created by `valueToAttributes` back to a node 
-value. 
+Converts an attributes value created by `valueToAttributes` back to a node
+value.
 
 ```javascript
 const attributes = {
@@ -496,7 +496,7 @@ console.log( node.hasClass( 'two' ) )
 
 #### toggleClass
 
-Toggles the named class on or off. 
+Toggles the named class on or off.
 
 If just the class name is passed it will:
 
@@ -549,7 +549,7 @@ want to override these plugins.
 
 #### createText
 
-Creates a text node. The new node's value looks like: 
+Creates a text node. The new node's value looks like:
 
 ```json
 {
@@ -567,7 +567,7 @@ console.log( node.getValue( "nodeValue" ) )
 
 #### createComment
 
-Creates a comment node. The new node's value looks like: 
+Creates a comment node. The new node's value looks like:
 
 ```json
 {
@@ -585,7 +585,7 @@ console.log( node.getValue( "nodeValue" ) )
 
 #### createDocumentFragment
 
-Creates a document fragment node. The new node's value looks like: 
+Creates a document fragment node. The new node's value looks like:
 
 ```json
 {
@@ -603,7 +603,7 @@ const node = Tree.createDocumentFragment()
 
 Creates a document type node. Analagous to the doctype in the DOM.
 
-The new node's value looks like: 
+The new node's value looks like:
 
 ```json
 {
@@ -618,14 +618,14 @@ The name is rquired, but publicId and systemId are optional:
 
 ```javascript
 const html5 = Tree.createDocumentType( 'html' )
-const html4 = Tree.createDocumentType( 
-  'HTML', '-//W3C//DTD HTML 4.01//EN', 'http://www.w3.org/TR/html4/strict.dtd' 
+const html4 = Tree.createDocumentType(
+  'HTML', '-//W3C//DTD HTML 4.01//EN', 'http://www.w3.org/TR/html4/strict.dtd'
 )
 ```
 
 #### createDocument
 
-Creates a document node. The new node's value looks like: 
+Creates a document node. The new node's value looks like:
 
 ```json
 {
@@ -644,10 +644,10 @@ const node = Tree.createDocument()
 Creates an element node. The new node's value looks like this:
 
 ```json
-{ 
-  "nodeType": "element", 
-  "tagName": "...", 
-  "attributes": {} 
+{
+  "nodeType": "element",
+  "tagName": "...",
+  "attributes": {}
 }
 ```
 
@@ -665,7 +665,7 @@ const lunchbox = Tree.createElement( 'lunchbox', {
 Acts like the browser DOM dataset - provides an abstraction over any attributes
 prefixed by `data-`.
 
-The abstraction converts between hyphenated `data-` style attributes and 
+The abstraction converts between hyphenated `data-` style attributes and
 camelCased attributes:
 
 ```javascript
@@ -748,20 +748,20 @@ console.log( container.getText() )
 ### H Factory
 
 Generates a [hyperscript](https://github.com/hyperhype/hyperscript)-like API
-as a convenience wrapper for generating nested nodes - backed by 
+as a convenience wrapper for generating nested nodes - backed by
 [html-script](https://github.com/mojule/html-script/).
 
 The arguments should either be multiple strings for the node names you want to
 use, or a single array of strings
 
-If you omit the arguments, the node names from HTML (`div`, `p` etc) will be 
+If you omit the arguments, the node names from HTML (`div`, `p` etc) will be
 used.
 
 ```javascript
 // alternately, Tree.H( [ 'box', 'hat', 'cheese' ] )
 const h = Tree.H( 'box', 'hat', 'cheese' )
 
-const { 
+const {
   document, documentType, documentFragment, text, comment,
   box, hat, cheese
 } = h
@@ -787,9 +787,9 @@ console.log( doc.stringify() )
 
 ### isEmpty
 
-Overrides base `isEmpty` from 
+Overrides base `isEmpty` from
 [tree-factory](https://github.com/mojule/tree-factory) and any other `isEmpty`
-plugins added prior to the DOM plugins, and returns `true` if the node matches 
+plugins added prior to the DOM plugins, and returns `true` if the node matches
 any of the following `isType` plugins:
 
 - isText
@@ -813,7 +813,7 @@ console.log( text.isEmpty() )
 
 ### isType
 
-A set of functions that return `true` if the current node is of a given node 
+A set of functions that return `true` if the current node is of a given node
 type.
 
 #### isText
@@ -840,7 +840,7 @@ console.log( comment.isComment() )
 
 #### isDocumentFragment
 
-Default implementation returns `true` if 
+Default implementation returns `true` if
 `node.nodeType() === 'documentFragment'`
 
 ```javascript
@@ -875,7 +875,7 @@ console.log( doc.isDocument() )
 #### isElement
 
 Returns true if none of the above conditions are met - this means that if you
-don't override anything, most of your custom tree nodes will be considered 
+don't override anything, most of your custom tree nodes will be considered
 elements, as will elements created with `Tree.createElement`
 
 ```javascript
@@ -909,10 +909,10 @@ console.log( banana.tagName() )
 
 #### nodeName
 
-Tests the various `isText`, `isComment` etc. and returns '#text', '#comment', 
+Tests the various `isText`, `isComment` etc. and returns '#text', '#comment',
 '#document' or '#document-fragment' as appropriate.
 
-If the node `isDocumentType` returns the node's `name` property if it exists, 
+If the node `isDocumentType` returns the node's `name` property if it exists,
 otherwise falls back to `node.treeType()`
 
 If the node `isElement`, returns `node.tagName()`
@@ -934,7 +934,7 @@ console.log( banana.nodeName() )
 
 ### nodeValue
 
-By default, a shortcut to getting or setting the `nodeValue` property of the 
+By default, a shortcut to getting or setting the `nodeValue` property of the
 node's value object, can be overridden for custom behaviour
 
 #### nodeValue
@@ -976,15 +976,15 @@ console.log( node.nodeValue() )
 
 ### parser
 
-Static method that parses an XML-like representation of your tree and returns 
-either a root node if the markup has a single root element, or a 
+Static method that parses an XML-like representation of your tree and returns
+either a root node if the markup has a single root element, or a
 documentFragment node if the markup contains more than one unrooted node.
 
-Uses [htmlparser2](https://github.com/fb55/htmlparser2) with a custom adapter 
+Uses [htmlparser2](https://github.com/fb55/htmlparser2) with a custom adapter
 under the hood.
 
-Takes an optional second `options` argument which is passed through to 
-htmlparser2, see their docs for more info. Adds an extra property to the 
+Takes an optional second `options` argument which is passed through to
+htmlparser2, see their docs for more info. Adds an extra property to the
 options, `removeWhitespace`, which will remove all whitespace-only nodes, useful
 for parsing pretty-printed XML for custom trees where whitespace nodes don't
 make sense.
@@ -998,7 +998,7 @@ console.log( node.tagName() )
 const node2 = Tree.parse( `
 <hello>
   <world class="foo" />
-</hello>  
+</hello>
 `, { removeWhitespace: true } )
 ```
 
@@ -1006,21 +1006,21 @@ const node2 = Tree.parse( `
 
 Plugins allowing you to use CSS selectors to query your tree.
 
-Backed by [css-select](https://github.com/fb55/css-select) with a custom 
+Backed by [css-select](https://github.com/fb55/css-select) with a custom
 adapter. css-select supports all CSS3 selectors, as well as some additional
 selectors from jQuery and some of its own as well. See the docs for more info.
 
 #### querySelector
 
 Finds the first descendant node of the current node that matches the given
-selector. Like the browser DOM, it does not include the current node in the 
+selector. Like the browser DOM, it does not include the current node in the
 search.
 
 ```javascript
 const node2 = Tree.parse( `
 <hello>
   <world class="foo" />
-</hello>  
+</hello>
 `, { removeWhitespace: true } )
 
 const foo = node2.querySelector( '.foo' )
@@ -1028,7 +1028,7 @@ const foo = node2.querySelector( '.foo' )
 
 #### querySelectorAll
 
-Finds all descendant nodes that match the given selector.  Like the browser DOM, 
+Finds all descendant nodes that match the given selector.  Like the browser DOM,
 it does not include the current node in the search. Returns an array of matching
 nodes.
 
@@ -1037,7 +1037,7 @@ const node2 = Tree.parse( `
 <hello>
   <world class="foo" />
   <world class="bar" />
-</hello>  
+</hello>
 `, { removeWhitespace: true } )
 
 const worlds = node2.querySelectorAll( 'world' )
@@ -1048,14 +1048,14 @@ console.log( worlds.length )
 
 #### matches
 
-Returns a boolean indicating whether the current node matches the given 
+Returns a boolean indicating whether the current node matches the given
 selector.
 
 ```javascript
 const node2 = Tree.parse( `
 <hello>
   <world class="foo" />
-</hello>  
+</hello>
 `, { removeWhitespace: true } )
 
 // true

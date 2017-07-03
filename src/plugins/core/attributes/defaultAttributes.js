@@ -7,6 +7,10 @@ const defaultAttributes = ({ core }) => {
     parse: str => str.split( ' ' ),
     toString: value => value.join( ' ' )
   })
+
+  core.registerAttribute({
+    name: 'id'
+  })
 }
 
 module.exports = defaultAttributes

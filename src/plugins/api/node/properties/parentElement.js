@@ -1,13 +1,13 @@
 'use strict'
 
-const parentElement = ({ api, privates }) => {
-  privates.registerGet({
+const parentElement = ({ api, core }) => {
+  core.registerProperty({
     target: api,
     name: 'parentElement',
     get: () => {
       const parent = api.parentNode
 
-      return parent && parent.isElement() ? parent : null
+      return parent && parent.isElementNode() ? parent : null
     }
   })
 }

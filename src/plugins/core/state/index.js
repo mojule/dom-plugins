@@ -5,7 +5,7 @@ const is = require( '@mojule/is' )
 const core = ({ core }) => {
   core.isState = state =>
     is.object( state ) && is.object( state.value ) &&
-    is.string( state.value.nodeName )
+    is.integer( state.value.nodeType )
 }
 
 module.exports = core

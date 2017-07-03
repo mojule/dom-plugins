@@ -1,8 +1,8 @@
 'use strict'
 
-const innerText = ({ api, privates, Api }) => {
+const innerText = ({ api, core, Api }) => {
   // they're not actually the same - whitespace is different - consider fixing
-  privates.registerProperty({
+  core.registerProperty({
     target: api,
     name: 'innerText',
     get: () => api.textContent,

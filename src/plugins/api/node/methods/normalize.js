@@ -17,3 +17,5 @@ const normalize = ({ api }) => {
     })
   }
 }
+
+module.exports = normalize

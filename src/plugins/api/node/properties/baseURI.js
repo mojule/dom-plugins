@@ -1,7 +1,7 @@
 'use strict'
 
-const baseURI = ({ api, privates }) => {
-  privates.registerGet({
+const baseURI = ({ api, core }) => {
+  core.registerProperty({
     target: api,
     name: 'baseURI',
     get: () => '/'

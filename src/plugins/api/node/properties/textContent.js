@@ -2,27 +2,33 @@
 
 const is = require( '@mojule/is' )
 
-const textContent = ({ api, privates, Api }) => {
-  privates.registerProperty({
+const textContent = ({ api, core, Api }) => {
+  core.registerProperty({
     target: api,
     name: 'textContent',
     get: () => {
-      if( api.isDocument() || api.isDocumentType() )
+      if( api.isDocumentNode() || api.isDocumentTypeNode() )
         return null
 
-      if( api.isComment() || api.isProcessingInstruction() || api.isText() )
+      if( api.isCommentNode() || api.isTextNode() )
         return api.nodeValue
 
+      // ?
+      if( api.isProcessingInstructionNode() )
+        return api.data
+
       return api.dfsNodes.reduce( ( text, current ) => {
-        if( api.isText() )
+        if( api.isTextNode() )
           text += current.nodeValue
 
         return text
       }, '' )
     },
     set: value => {
-      if( api.isText() || api.isComment() || api.isProcessingInstruction() ){
+      if( api.isTextNode() || api.isCommentNode() ){
         api.nodeValue = value
+      } else if( api.isProcessingInstructionNode() ){
+        // ?
       } else {
         const textNode = Api.createTextNode( value )
 

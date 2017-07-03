@@ -9,8 +9,8 @@ const creators = [
 
 const Adapter = Tree => {
   const adapter = {
-    isNode: node => is.function( node.get ),
-    appendChild: ( node, child ) => node.append( child ),
+    isNode: node => is.integer( node.nodeType ),
+    appendChild: ( node, child ) => node.appendChild( child ),
     addAttributes: ( node, attributes ) => node.setAttributes( attributes ),
   }
 

@@ -50,16 +50,15 @@ const attribute = ({ core }) => {
     name = name.toLowerCase()
 
     const attribute = core.attribute( name )
-    const state = core.getState( target )
 
     let get, set
 
     if( attribute.rawProperty ){
-      get = () => state.value.attributes[ name ]
-      set = value => state.value.attributes[ name ]
+      get = () => target.value.attributes[ name ]
+      set = value => target.value.attributes[ name ]
     } else {
-      get = () => attribute.stringify( state.value.attributes[ name ] )
-      set = value => state.value.attributes[ name ] = attribute.parse( value )
+      get = () => attribute.stringify( target.value.attributes[ name ] )
+      set = value => target.value.attributes[ name ] = attribute.parse( value )
     }
 
     core.registerProperty({ target, name: attribute.propertyName(), get, set })

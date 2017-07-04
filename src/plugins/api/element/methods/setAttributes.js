@@ -7,6 +7,9 @@ const setAttributes = ({ api, state, core }) => {
   if( !api.isElementNode() ) return
 
   api.setAttributes = obj => {
+    if( !is.object( obj ) )
+      throw Error( 'setAttributes expects an object' )
+
     Object.keys( obj ).forEach( name => {
       const value = obj[ name ]
 

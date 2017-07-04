@@ -2,7 +2,7 @@
 
 const baseAdapter = require( 'css-select-base-adapter' )
 
-const isTag = node => node.isElement()
+const isTag = node => node.isElementNode()
 
 const getAttributeValue = ( node, name ) => node.getAttribute( name )
 

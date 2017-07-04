@@ -6,7 +6,7 @@ const lastElementChild = ({ api, core }) => {
   core.registerProperty({
     target: api,
     name: 'lastElementChild',
-    get: () => api.elementChildNodes.item( api.childElementCount )
+    get: () => api.elementChildNodes.item( api.elementChildNodes.length - 1 )
   })
 }
 

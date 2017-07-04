@@ -6,7 +6,7 @@ const selectAll = ({ api, state, core }) => {
   api.selectAll = selector => {
     const { getApi, nodeList } = core
 
-    let result = nodeList()
+    let result = nodeList([])
 
     if( api.matches( selector ) )
       result = result.append( getApi( state ) )

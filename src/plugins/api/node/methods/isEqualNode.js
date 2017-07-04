@@ -11,7 +11,7 @@ const isEqualNode = ({ api, state, core }) => {
     if( is.string( node.nodeValue ) ) return current.nodeValue === node.nodeValue
     if( node.tagName !== current.tagName ) return false
 
-    // easy, but wrong; fix
+    // close enough?
     return node.outerHTML === current.outerHTML
   }
 }

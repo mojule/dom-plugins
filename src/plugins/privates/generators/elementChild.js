@@ -1,12 +1,12 @@
 'use strict'
 
-const elementChild = ({ privates, state, core }) => {
+const elementChild = ({ privates, state, core, Api }) => {
   privates.elementChild = function*(){
     const { getApi } = core
     let current = state.firstChild
 
     while( current ){
-      if( current.isElementNode() )
+      if( current.value.nodeType === Api.ELEMENT_NODE )
         yield getApi( current )
 
       current = current.nextSibling

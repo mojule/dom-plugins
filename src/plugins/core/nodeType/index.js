@@ -41,9 +41,11 @@ const nodeType = ({ core }) => {
     nodeType: 9,
     name: 'document',
     isEmpty: () => false,
-    accepts: ( parent, child ) => {},
+    // todo
+    accepts: ( parent, child ) => true,
     create: ( namespaceURI, qualifiedNameStr, documentType ) => {
       // todo
+      return { namespaceURI, qualifiedNameStr, documentType }
     }
   })
 

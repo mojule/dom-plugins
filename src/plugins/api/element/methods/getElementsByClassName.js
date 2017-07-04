@@ -16,7 +16,9 @@ const getElementsByClassName = ({ api, state, core }) => {
     )
 
     // should ensure it's live
-    return api.descendantNodes.filter( current => current.matches( selector ) )
+    return api.descendantNodes.filter( current =>
+      current.isElementNode() && current.matches( selector )
+    )
   }
 }
 

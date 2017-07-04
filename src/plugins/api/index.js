@@ -52,6 +52,7 @@ module.exports = [
   closest, getAttribute, getAttributes, getElementsByClassName,
   getElementsByTagName, hasAttribute, hasAttributes, matches, querySelector,
   querySelectorAll, removeAttribute, select, selectAll, setAttribute,
+  setAttributes,
 
   attributes, childElementCount, children, classList, className, dataset,
   firstElementChild, id, innerHTML, lastElementChild, name, nextElementSibling,

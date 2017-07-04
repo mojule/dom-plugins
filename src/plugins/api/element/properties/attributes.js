@@ -8,13 +8,14 @@ function* entries( obj ) {
 const attributes = ({ api, state, core }) => {
   if( !api.isElementNode() ) return
 
-  const { nodeList, attribute } = core
+  const { nodeList } = core
 
   core.registerProperty({
     target: api,
     name: 'attributes',
     get: () => nodeList( entries( state.value.attributes ) ).map( pair => {
       const name = pair[ 0 ]
+      const attribute = core.attribute( name )
       const value = attribute.stringify( pair[ 1 ] )
 
       return { name, value }

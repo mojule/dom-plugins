@@ -4,25 +4,23 @@ const is = require( '@mojule/is' )
 const H = require( 'html-script' )
 const Adapter = require( '../../../html-script-adapter' )
 
-const nonTags = [
-  '#text', '#comment', '#document', '#document-type', '#document-fragment'
-]
-
 const h = ({ statics, core, Api }) => {
   const { tagNames } = core
-  const nodeNames = Object.keys( core.nodeTypes ).map( name => '#' + name )
+  const nodeNames = Object.keys( core.nodeTypes )
+    .filter( name => name !== 'element' ).map( name => '#' + name )
 
   const options = {
     nodeNames: tagNames.concat( nodeNames )
   }
 
-  const adapter = Adapter( Api )
-  const h = H( adapter, options )
-
   core.registerProperty({
     target: statics,
     name: 'h',
-    get: () => h
+    get: () => {
+      const adapter = Adapter( Api )
+
+      return H( adapter, options )
+    }
   })
 }
 

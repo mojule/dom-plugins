@@ -29,11 +29,8 @@ const parse = ({ statics }) => {
 
     dom.whitespace( options )
 
-    const isSingleElement =
-      dom.isDocumentFragment() && dom.getChildren().length === 1
-
-    if( isSingleElement )
-      return dom.firstChild().clone()
+    if( dom.isDocumentFragmentNode() && dom.childNodes.length === 1 )
+      return dom.firstChild.remove()
 
     return dom
   }

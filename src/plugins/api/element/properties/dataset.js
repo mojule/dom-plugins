@@ -14,7 +14,9 @@ const dataset = ({ api, state, core }) => {
     set: ( target, name, value ) => {
       name = 'data-' + camelCaseToHyphenated( name )
 
-      return api.setAttribute( name, value )
+      api.setAttribute( name, value )
+
+      return true
     }
   })
 

@@ -30,7 +30,8 @@ const whitespace = ({ api }) => {
       const next = current => {
         const { tagName } = current
 
-        if( preserveWhitespace.includes( tagName ) ) return
+        if( current.isElementNode() && preserveWhitespace.includes( tagName ) )
+          return
 
         if( current.isTextNode() ){
           if( removeWhitespace && current.nodeValue.trim() === '' ){

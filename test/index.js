@@ -32,6 +32,10 @@ describe( 'DOM plugins', () => {
       it( 'nodeName', () => {
         assert.equal( node.nodeName, '#text' )
       })
+
+      it( 'enum', () => {
+        assert.equal( node.nodeType, Tree.TEXT_NODE )
+      })
     })
 
     it( 'createComment', () => {
@@ -42,6 +46,7 @@ describe( 'DOM plugins', () => {
       assert.equal( node.toString(), '<!--test-->' )
       assert.equal( node.nodeValue, 'test' )
       assert.equal( node.nodeName, '#comment' )
+      assert.equal( node.nodeType, Tree.COMMENT_NODE )
     })
 
     it( 'createDocumentFragment', () => {
@@ -50,6 +55,7 @@ describe( 'DOM plugins', () => {
       assert( node.isDocumentFragmentNode() )
       assert( !node.isEmpty() )
       assert.equal( node.nodeName, '#document-fragment' )
+      assert.equal( node.nodeType, Tree.DOCUMENT_FRAGMENT_NODE )
     })
 
     it( 'createDocumentType', () => {
@@ -59,6 +65,7 @@ describe( 'DOM plugins', () => {
       assert( node.isEmpty() )
       assert.equal( node.toString(), '<!doctype html>' )
       assert.equal( node.nodeName, 'html' )
+      assert.equal( node.nodeType, Tree.DOCUMENT_TYPE_NODE )
     })
 
     it( 'createDocument', () => {
@@ -68,6 +75,7 @@ describe( 'DOM plugins', () => {
       assert( !node.isElementNode() )
       assert( !node.isEmpty() )
       assert.equal( node.nodeName, '#document' )
+      assert.equal( node.nodeType, Tree.DOCUMENT_NODE )
     })
 
     it( 'createElement', () => {
@@ -78,608 +86,602 @@ describe( 'DOM plugins', () => {
       assert.equal( node.toString(), '<div id="myDiv"></div>' )
       assert.equal( node.nodeName, 'div' )
       assert.equal( node.tagName, 'div' )
+      assert.equal( node.nodeType, Tree.ELEMENT_NODE )
     })
   })
 
-
-  describe( 'Attributes', () => {
-    it( 'getAttribute', () => {
-      const node = Tree.createElement( 'div', { id: 'myDiv' } )
-      const id = node.getAttribute( 'id' )
-
-      assert.strictEqual( id, "myDiv" )
-    })
-
-    it( 'getAttributes', () => {
-      const node = Tree.createElement( 'div', { id: 'myDiv' } )
-
-      assert.deepEqual( node.getAttributes(), { id: "myDiv" } )
-    })
-
-    /*
-    it( 'setAttributes', () => {
-      const node = Tree.createElement( 'div' )
-
-      node.setAttributes( { id: 'myDiv' } )
-
-      assert.deepEqual( node.getAttributes(), { id: "myDiv" } )
-
-      assert.throws( () => node.setAttributes( [] ) )
-    })
-
-    it( 'attributes', () => {
-      const node = Tree.createElement( 'div' )
-
-      node.attributes( { id: 'myDiv' } )
-
-      assert.deepEqual( node.attributes(), { id: "myDiv" } )
-
-      assert.throws( () => node.attributes( [] ) )
-    })
-
-    it( 'getAttr', () => {
-      const node = Tree.createElement( 'div', { id: 'myDiv' } )
-
-      assert.equal( node.getAttr( 'id' ), 'myDiv' )
-      assert.equal( node.getAttr( 'nope' ), undefined )
-    })
-
-    it( 'setAttr', () => {
-      const node = Tree.createElement( 'div' )
-
-      node.setAttr( 'id', 'myDiv' )
-
-      assert.equal( node.getAttr( 'id' ), 'myDiv' )
-    })
-
-    it( 'attr', () => {
-      const node = Tree.createElement( 'div' )
-
-      node.attr( 'id', 'myDiv' )
-
-      assert.equal( node.attr( 'id' ), 'myDiv' )
-    })
-
-    it( 'hasAttr', () => {
-      const node = Tree.createElement( 'div', { id: 'myDiv' } )
-
-      assert( node.hasAttr( 'id' ) )
-      assert( !node.hasAttr( 'nope' ) )
-    })
-
-    it( 'removeAttr', () => {
-      const node = Tree.createElement( 'div', { id: 'myDiv', class: 'myClass' } )
-
-      assert( node.hasAttr( 'id' ) )
-      assert( node.hasAttr( 'class' ) )
-
-      node.removeAttr( 'class' )
-
-      assert( node.hasAttr( 'id' ) )
-      assert( !node.hasAttr( 'class' ) )
-    })
-
-    it( 'clearAttrs', () => {
-      const node = Tree.createElement( 'div', { id: 'myDiv', class: 'myClass' } )
-
-      node.clearAttrs()
-
-      assert( !node.hasAttr( 'id' ) )
-      assert( !node.hasAttr( 'class' ) )
-      assert.deepEqual( node.getAttributes(), {} )
-    })
-
-    it( 'valueToAttributes/attributesToValue', () => {
-      const value = {
-        nodeType: 'something',
-        foo: 'hello',
-        num: 42,
-        bool: false,
-        n: null,
-        bar: {
-          a: [ 'b', 'c', { d: 'e', f: 3 } ]
-        }
-      }
-
-      const expectAttributes = {
-        nodeType: 'something',
-        foo: 'hello',
-        'num-number': '42',
-        'bool-boolean': 'false',
-        'n-null': 'null',
-        'bar_a-0': 'b',
-        'bar_a-1': 'c',
-        'bar_a-2_d': 'e',
-        'bar_a-2_f-number': '3'
-      }
-
-      const attributes = Tree.valueToAttributes( value )
-
-      assert.deepEqual( attributes, expectAttributes )
-
-      const nodeValue = Tree.attributesToValue( attributes )
-
-      assert.deepEqual( nodeValue, value )
-
-      assert.throws( () => Tree.attributesToValue() )
-    })
-    */
-  })
-
-  /*
-
-  describe( 'Classes', () => {
-    it( 'classNames', () => {
-      const n1 = Tree.createElement( 'div' )
-
-      assert.deepEqual( n1.classNames(), [] )
-
-      const n2 = Tree.createElement( 'div', { class: ' cool  ok yeah ' } )
-
-      assert.deepEqual( n2.classNames(), [ 'cool', 'ok', 'yeah' ] )
-    })
-
-    it( 'addClass', () => {
-      const n2 = Tree.createElement( 'div', { class: ' cool  ok yeah ' } )
-
-      n2.addClass( ' awesome  ' )
-
-      assert.deepEqual( n2.classNames(), [ 'cool', 'ok', 'yeah', 'awesome' ] )
-
-      n2.addClass( ' two   three ' )
-
-      assert.deepEqual( n2.classNames(), [ 'cool', 'ok', 'yeah', 'awesome', 'two', 'three' ] )
-
-      assert.throws( () => n2.addClass() )
-    })
-
-    it( 'hasClass', () => {
-      const n2 = Tree.createElement( 'div', { class: ' cool  ok yeah ' } )
-
-      assert( n2.hasClass( 'cool' ) )
-      assert( n2.hasClass( 'ok' ) )
-      assert( n2.hasClass( 'yeah' ) )
-      assert( !n2.hasClass( 'awesome' ) )
-    })
-
-    it( 'addClasses', () => {
-      const n = Tree.createElement( 'div', { class: ' cool  ok yeah ' } )
-
-      n.addClasses( ' one', 'two ' )
-
-      assert.deepEqual( n.classNames(), [ 'cool', 'ok', 'yeah', 'one', 'two' ] )
-
-      n.addClasses( [ 'three', ' four' ] )
-
-      assert.deepEqual( n.classNames(), [ 'cool', 'ok', 'yeah', 'one', 'two', 'three', 'four' ] )
-
-      n.addClasses( 'five six' )
-
-      assert.deepEqual( n.classNames(), [ 'cool', 'ok', 'yeah', 'one', 'two', 'three', 'four', 'five', 'six' ] )
-    })
-
-    it( 'removeClass', () => {
-      const n = Tree.createElement( 'div', { class: ' cool  ok yeah ' } )
-
-      n.removeClass( ' ok' )
-
-      assert.deepEqual( n.classNames(), [ 'cool', 'yeah' ] )
-    })
-
-    it( 'toggleClass', () => {
-      const n = Tree.createElement( 'div', { class: ' cool  ok yeah ' } )
-
-      n.toggleClass( 'cool' )
-      assert( !n.hasClass( 'cool' ), 'toggle existing' )
-
-      n.toggleClass( 'awesome' )
-      assert( n.hasClass( 'awesome' ), 'toggle nonexistant' )
-
-      n.toggleClass( 'one', true )
-      assert( n.hasClass( 'one' ), 'set new' )
-
-      n.toggleClass( 'two', false )
-      assert( !n.hasClass( 'two' ), 'remove new' )
-
-      n.toggleClass( 'ok', true )
-      assert( n.hasClass( 'ok' ), 'set existing' )
-
-      n.toggleClass( 'yeah', false )
-      assert( !n.hasClass( 'yeah' ), 'remove existing' )
-    })
-
-    it( 'clearClasses', () => {
-      const n = Tree.createElement( 'div', { class: ' cool  ok yeah ' } )
-
-      n.clearClasses()
-
-      assert.deepEqual( n.classNames(), [] )
-    })
-  })
-
-  describe( 'dataset', () => {
-    it( 'getDataset', () => {
-      const n = Tree.createElement( 'div' )
-
-      assert.deepEqual( n.getDataset(), {} )
-
-      const value = {
-        id: 'myDiv',
-        'data-first-name': 'Nik',
-        'data-last-name': 'Coughlin',
-        'data-age': 36
-      }
-
-      const expect = {
-        firstName: 'Nik',
-        lastName: 'Coughlin',
-        age: '36'
-      }
-
-      const n2 = Tree.createElement( 'div', value )
-
-      const dataset = n2.getDataset()
-
-      assert.deepEqual( dataset, expect )
-    })
-
-    it( 'setDataset', () => {
-      const n = Tree.createElement( 'div', { id: 'myDiv' } )
-
-      const value = {
-        firstName: 'Nik',
-        lastName: 'Coughlin',
-        age: 36
-      }
-
-      const expect = {
-        id: 'myDiv',
-        'data-first-name': 'Nik',
-        'data-last-name': 'Coughlin',
-        'data-age': '36'
-      }
-
-      n.setDataset( value )
-
-      assert.deepEqual( n.getAttributes(), expect )
-
-      assert.throws( () => n.setDataset() )
-    })
-
-    it( 'dataset', () => {
-      const n = Tree.createElement( 'div' )
-
-      assert.deepEqual( n.dataset(), {} )
-
-      const value = {
-        id: 'myDiv',
-        'data-first-name': 'Nik',
-        'data-last-name': 'Coughlin',
-        'data-age': 36
-      }
-
-      const expect = {
-        firstName: 'Nik',
-        lastName: 'Coughlin',
-        age: '36'
-      }
-
-      const n2 = Tree.createElement( 'div', value )
-
-      const dataset = n2.dataset()
-
-      assert.deepEqual( dataset, expect )
-
-      const n3 = Tree.createElement( 'div', { id: 'myDiv' } )
-
-      const value2 = {
-        firstName: 'Nik',
-        lastName: 'Coughlin',
-        age: 36
-      }
-
-      const expect2 = {
-        id: 'myDiv',
-        'data-first-name': 'Nik',
-        'data-last-name': 'Coughlin',
-        'data-age': '36'
-      }
-
-      n3.dataset( value2 )
-
-      assert.deepEqual( n3.getAttributes(), expect2 )
-    })
-  })
-
-  it( 'getText', () => {
-    const div = Tree.createElement( 'div' )
-    const t1 = Tree.createText( 'Hello ' )
-    const strong = Tree.createElement( 'strong' )
-    const t2 = Tree.createText( 'World' )
-    const i = Tree.createElement( 'i' )
-
-    div.append( t1 )
-    div.append( strong )
-    strong.append( t2 )
-
-    assert.equal( t1.getText(), 'Hello ' )
-    assert.equal( t2.getText(), 'World' )
-    assert.equal( strong.getText(), 'World' )
-    assert.equal( div.getText(), 'Hello World' )
-    assert.equal( i.getText(), '' )
-  })
-
-  it( 'getTagName', () => {
-    const cool = Tree( { tagName: 'cool' } )
-
-    assert.equal( cool.getTagName(), 'cool' )
-
-    const wut = Tree( { tagName: '' } )
-
-    assert.throws( () => wut.getTagName() )
-
-    const nope = Tree( { tagName: 42 } )
-
-    assert.equal( nope.getTagName(), 'node', 'falls back to default nodeType' )
-  })
-
-  it( 'setTagName', () => {
-    const cool = Tree( { tagName: 'cool' } )
-
-    cool.setTagName( 'dumb' )
-
-    assert.equal( cool.getTagName(), 'dumb' )
-
-    cool.tagName( 'cool' )
-
-    assert.equal( cool.getTagName(), 'cool' )
-
-    assert.throws( () => cool.setTagName() )
-  })
-
-  it( 'nodeName', () => {
-    const cool = Tree( { nodeType: 'documentType' } )
-
-    assert.equal( cool.nodeName(), cool.treeType(), 'defaults to treeType' )
-
-    const nope = Tree( { nodeType: 'documentType', name: '' } )
-
-    assert.throws( () => nope.nodeName() )
-  })
-
-  describe( 'nodeValue', () => {
-    it( 'getNodeValue', () => {
-      const n = Tree( { nodeType: 'text', nodeValue: 'Hello' } )
-
-      assert.equal( n.getNodeValue(), 'Hello' )
-    })
-
-    it( 'setNodeValue', () => {
-      const n = Tree( { nodeType: 'text', nodeValue: 'Hello' } )
-
-      n.setNodeValue( 'World' )
-
-      assert.equal( n.getNodeValue(), 'World' )
-
-      assert.throws( () => n.setNodeValue() )
-    })
-
-    it( 'nodeValue', () => {
-      const n = Tree( { nodeType: 'text', nodeValue: 'Hello' } )
-
-      n.nodeValue( 'World' )
-
-      assert.equal( n.nodeValue(), 'World' )
-    })
-  })
-
-  describe( 'parser', () => {
-    it( 'single element', () => {
-      const html = '<div>Hello</div>'
-      const div = Tree.parse( html )
-
-      assert( div.isElement() )
-      assert.equal( div.nodeType(), 'element' )
-      assert.equal( div.tagName(), 'div' )
-      assert.equal( div.stringify(), html )
-    })
-
-    it( 'multiple elements', () => {
-      const html = '<div>Hello</div><span> World</span>'
-      const div = Tree.parse( html )
-
-      assert( div.isDocumentFragment() )
-      assert.equal( div.nodeType(), 'documentFragment' )
-      assert.equal( div.stringify(), html )
-    })
-
-    it( 'doctype', () => {
-      const html = '<!doctype html><div></div>'
-      const fragment = Tree.parse( html )
-      const dt = fragment.firstChild()
-
-      assert( dt.isDocumentType() )
-      assert.equal( fragment.stringify(), html )
-    })
-  })
-
-  describe( 'stringify', () => {
-    it( 'doctype', () => {
-      const d = Tree.createDocumentType( 'html', 'myId', 'mySystemId' )
-
-      assert.equal( d.stringify(), '<!doctype html public "myId" "mySystemId">' )
-    })
-
-    it( 'empty attributes', () => {
-      const n = Tree.createElement( 'div', { checked: null } )
-
-      assert.equal( n.stringify(), '<div checked></div>' )
-    })
-
-    it( 'empty nodes', () => {
-      const isEmpty = node => {
-        const { isEmpty } = node
-        return {
-          isEmpty: () => {
-            if( node.nodeName() === 'cool' )
-              return true
-
-            return isEmpty()
-          }
-        }
-      }
-
-      const Tree = Factory( plugins.concat( isEmpty ) )
-
-      const n = Tree.createElement( 'cool' )
-
-      assert.equal( n.stringify(), '<cool />' )
-    })
-  })
-
-  it( 'treeType', () => {
-    const div = Tree.createElement( 'div' )
-
-    assert.equal( div.treeType(), 'tree' )
-  })
-
-  describe( 'CSS select', () => {
-    describe( 'querySelector', () => {
-      it( 'tag', () => {
-        const html = '<div><strong>Hello</strong></div>'
-        const n = Tree.parse( html )
-
-        const strong = n.querySelector( 'strong' )
-
-        assert.equal( strong.nodeName(), 'strong' )
+  describe( 'element', () => {
+    const Dom = () => {
+      const div = Tree.createElement( 'div', { id: 'myDiv', class: 'foo baz qux', title: 'bar' } )
+      const p = Tree.createElement( 'p' )
+      const div2 = Tree.createElement( 'div' )
+      const span = Tree.createElement( 'span', { class: 'bar' } )
+      const strong = Tree.createElement( 'strong', { class: 'bar' } )
+      const strong2 = Tree.createElement( 'strong', { class: 'foo' } )
+      const text = Tree.createTextNode( 'hello' )
+
+      div.appendChild( p )
+      p.appendChild( div2 )
+      div2.append( span, strong, strong2, text )
+
+      return { div, p, div2, span, strong, strong2, text }
+    }
+
+    describe( 'methods', () => {
+      it( 'closest', () => {
+        const { div, strong, p } = Dom()
+
+        const target = strong.closest( 'p' )
+
+        assert.equal( target, p )
       })
 
-      it( 'attribute', () => {
-        const html = '<div><strong class="cool">Hello</strong></div>'
-        const n = Tree.parse( html )
+      it( 'getAttribute', () => {
+        const { div } = Dom()
+        const id = div.getAttribute( 'id' )
 
-        const strong = n.querySelector( '.cool' )
-
-        assert.equal( strong.nodeName(), 'strong' )
+        assert.strictEqual( id, "myDiv" )
       })
 
-      it( ':contains', () => {
-        const html = '<div><strong>Hello</strong></div>'
-        const n = Tree.parse( html )
+      it( 'getAttributes', () => {
+        const { div } = Dom()
 
-        const strong = n.querySelector( ':contains(Hello)' )
+        assert.deepEqual(
+          div.getAttributes(),
+          { id: 'myDiv', class: 'foo baz qux', title: 'bar' }
+        )
+      })
 
-        assert( strong.isElement() )
+      it( 'getElementsByClassName', () => {
+        const { div, span, strong } = Dom()
+
+        const els = div.getElementsByClassName( 'bar' )
+
+        assert.deepEqual( Array.from( els ), [ span, strong ] )
+
+        const liveNode = Tree.createElement( 'div', { class: 'bar' } )
+
+        strong.appendChild( liveNode )
+
+        assert.deepEqual( Array.from( els ), [ span, strong, liveNode ] )
+      })
+
+      it( 'getElementsByTagName', () => {
+        const { div, strong, strong2 } = Dom()
+
+        const els = div.getElementsByTagName( 'strong' )
+
+        assert.deepEqual( Array.from( els ), [ strong, strong2 ] )
+
+        const liveNode = Tree.createElement( 'strong' )
+
+        strong2.appendChild( liveNode )
+
+        assert.deepEqual( Array.from( els ), [ strong, strong2, liveNode ] )
+      })
+
+      it( 'matches', () => {
+        const { div } = Dom()
+
+        assert( !div.matches( 'span' ) )
+        assert( div.matches( 'div' ) )
+        assert( div.matches( '#myDiv' ) )
+        assert( div.matches( '.foo' ) )
+        assert( div.matches( '[title=bar]' ) )
+      })
+
+      it( 'non standard contains selector', () => {
+        const div = Tree.createElement( 'div' )
+        const text = Tree.createTextNode( 'hello' )
+
+        div.appendChild( text )
+
+        assert( div.matches( ':contains(hello)' ) )
+      })
+
+      it( 'querySelector', () => {
+        const { div, strong, div2 } = Dom()
+
+        const target1 = div.querySelector( 'strong' )
+        const target2 = div.querySelector( 'div' )
+
+        assert.equal( target1, strong )
+        assert.equal( target2, div2 )
+      })
+
+      it( 'querySelectorAll', () => {
+        const { div, strong, strong2, div2 } = Dom()
+
+        const target1 = div.querySelectorAll( 'strong' )
+        const target2 = div.querySelectorAll( 'div' )
+
+        assert.deepEqual( Array.from( target1 ), [ strong, strong2 ] )
+        assert.deepEqual( Array.from( target2 ), [ div2 ] )
+      })
+
+      it( 'removeAttribute', () => {
+        const { div } = Dom()
+
+        div.removeAttribute( 'title' )
+
+        assert.deepEqual(
+          div.getAttributes(),
+          { id: 'myDiv', class: 'foo baz qux' }
+        )
+      })
+
+      it( 'select', () => {
+        const { div } = Dom()
+
+        assert.equal( div.select( 'div' ), div )
+      })
+
+      it( 'selectAll', () => {
+        const { div, div2 } = Dom()
+
+        assert.deepEqual( Array.from( div.selectAll( 'div' ) ), [ div, div2 ] )
+      })
+
+      it( 'setAttribute', () => {
+        const node = Tree.createElement( 'div' )
+
+        node.setAttribute( 'id', 'myDiv' )
+
+        assert.deepEqual( node.getAttributes(), { id: "myDiv" } )
+      })
+
+      it( 'setAttributes', () => {
+        const node = Tree.createElement( 'div' )
+
+        node.setAttributes( { id: 'myDiv' } )
+
+        assert.deepEqual( node.getAttributes(), { id: "myDiv" } )
+
+        assert.throws( () => node.setAttributes( [] ) )
       })
     })
 
-    describe( 'querySelectorAll', () => {
-      it( 'tag', () => {
-        const html = '<div><strong>Hello</strong> <strong>World</strong></div>'
-        const n = Tree.parse( html )
+    describe( 'properties', () => {
+      it( 'attributes', () => {
+        const { div } = Dom()
 
-        const strongs = n.querySelectorAll( 'strong' )
-
-        assert.equal( strongs.length, 2 )
-        assert( strongs.every( s => s.nodeName() === 'strong' ) )
+        assert.deepEqual(
+          Array.from( div.attributes ),
+          [
+            { name: 'id', value: 'myDiv' },
+            { name: 'class', value: 'foo baz qux' },
+            { name: 'title', value: 'bar' }
+          ]
+        )
       })
 
-      it( 'attribute', () => {
-        const html = '<div><strong class="cool">Hello</strong> <strong class="cool">World</strong></div>'
-        const n = Tree.parse( html )
+      it( 'childElementCount', () => {
+        const { div2 } = Dom()
 
-        const strongs = n.querySelectorAll( '.cool' )
-
-        assert.equal( strongs.length, 2 )
-        assert( strongs.every( s => s.nodeName() === 'strong' ) )
+        assert.equal( div2.childElementCount, 3 )
       })
 
-      it( ':contains', () => {
-        const html = '<div><strong class="cool">Hello</strong> <strong class="cool">Hello</strong></div>'
-        const n = Tree.parse( html )
+      it( 'children', () => {
+        const { div2, span, strong, strong2 } = Dom()
 
-        const strongs = n.querySelectorAll( ':contains(Hello)' )
-
-        assert.equal( strongs.length, 2 )
-        assert( strongs.every( s => s.nodeName() === 'strong' ) )
-      })
-    })
-
-    describe( 'matches', () => {
-      it( 'tag', () => {
-        const html = '<div><strong>Hello</strong></div>'
-        const n = Tree.parse( html )
-
-        const strong = n.querySelector( 'strong' )
-
-        assert( strong.matches( 'strong' ) )
+        assert.deepEqual(
+          Array.from( div2.children ),
+          [ span, strong, strong2 ]
+        )
       })
 
-      it( 'attribute', () => {
-        const html = '<div><strong class="cool">Hello</strong></div>'
-        const n = Tree.parse( html )
+      describe( 'classList', () => {
+        it( 'contains', () => {
+          const { div } = Dom()
 
-        const strong = n.querySelector( '.cool' )
+          assert( div.classList.contains( 'foo' ) )
+          assert( !div.classList.contains( 'nope' ) )
+        })
 
-        assert( strong.matches( '.cool' ) )
+        it( 'add', () => {
+          const { div } = Dom()
+
+          div.classList.add( 'new' )
+
+          assert( div.classList.contains( 'new' ) )
+        })
+
+        it( 'remove', () => {
+          const { div } = Dom()
+
+          div.classList.remove( 'foo' )
+
+          assert( !div.classList.contains( 'foo' ) )
+        })
+
+        it( 'replace', () => {
+          const { div } = Dom()
+
+          div.classList.replace( 'foo', 'new' )
+
+          assert( div.classList.contains( 'new' ) )
+          assert( !div.classList.contains( 'foo' ) )
+        })
+
+        describe( 'toggle', () => {
+          it( 'toggles on', () => {
+            const { div } = Dom()
+
+            div.classList.toggle( 'new' )
+
+            assert( div.classList.contains( 'new' ) )
+          })
+
+          it( 'toggles off', () => {
+            const { div } = Dom()
+
+            div.classList.toggle( 'foo' )
+
+            assert( !div.classList.contains( 'foo' ) )
+          })
+
+          it( 'forces on', () => {
+            const { div } = Dom()
+
+            div.classList.toggle( 'new', true )
+            div.classList.toggle( 'foo', true )
+
+            assert( div.classList.contains( 'new' ) )
+            assert( div.classList.contains( 'foo' ) )
+          })
+
+          it( 'forces new off', () => {
+            const { div } = Dom()
+
+            div.classList.toggle( 'new', false )
+            div.classList.toggle( 'foo', false )
+
+            assert( !div.classList.contains( 'new' ) )
+            assert( !div.classList.contains( 'foo' ) )
+          })
+        })
       })
 
-      it( ':contains', () => {
-        const html = '<div><strong>Hello</strong></div>'
-        const n = Tree.parse( html )
+      it( 'className', () => {
+        const { div } = Dom()
+        const newDiv = Tree.createElement( 'div' )
 
-        const strong = n.querySelector( ':contains(Hello)' )
+        assert.equal( div.className, 'foo baz qux' )
+        assert.equal( newDiv.className, '' )
 
-        assert( strong.matches( ':contains(Hello)' ) )
+        div.className = 'foo bar baz'
+
+        assert.equal( div.className, 'foo bar baz' )
+      })
+
+      it( 'dataset', () => {
+        const div = Tree.createElement( 'div' )
+
+        div.dataset.firstName = 'Nik'
+
+        assert.equal( div.getAttribute( 'data-first-name' ), 'Nik' )
+
+        div.setAttribute( 'data-last-name', 'Coughlin' )
+
+        assert.equal( div.dataset.lastName, 'Coughlin' )
+      })
+
+      it( 'firstElementChild', () => {
+        const { div2, span } = Dom()
+
+        assert.equal( div2.firstElementChild, span )
+      })
+
+      it( 'id', () => {
+        const { div, div2 } = Dom()
+
+        assert.equal( div.id, 'myDiv' )
+        assert.equal( div2.id, '' )
+
+        div2.id = 'myDiv2'
+
+        assert.equal( div2.id, 'myDiv2' )
+      })
+
+      it( 'innerHTML', () => {
+        const { div2 } = Dom()
+
+        assert.equal(
+          div2.innerHTML,
+          '<span class="bar"></span><strong class="bar"></strong><strong class="foo"></strong>hello'
+        )
+
+        div2.innerHTML = '<p>hello world</p>'
+
+        assert.equal(
+          div2.toString(),
+          '<div><p>hello world</p></div>'
+        )
+      })
+
+      it( 'lastElementChild', () => {
+        const { div2, strong2 } = Dom()
+
+        assert.equal( div2.lastElementChild, strong2 )
+      })
+
+      it( 'name', () => {
+        const div1 = Tree.createElement( 'div', { name: 'foo' } )
+        const div2 = Tree.createElement( 'div' )
+
+        assert.equal( div1.name, 'foo' )
+        assert.equal( div2.name, undefined )
+
+        div2.name = 'bar'
+
+        assert.equal( div2.name, 'bar' )
+      })
+
+      it( 'nextElementSibling', () => {
+        const { span, strong } = Dom()
+
+        assert.equal( span.nextElementSibling, strong )
+      })
+
+      it( 'outerHTML', () => {
+        const { div2 } = Dom()
+
+        const parent = div2.parentNode
+
+        assert.equal( div2.outerHTML, div2.toString() )
+
+        div2.outerHTML = '<p>Hello</p>'
+
+        assert.equal( parent.innerHTML, '<p>Hello</p>' )
+      })
+
+      it( 'previousElementSibling', () => {
+        const { span, strong } = Dom()
+
+        assert.equal( strong.previousElementSibling, span )
+      })
+
+      it( 'tagName', () => {
+        const div = Tree.createElement( 'div' )
+        const text = Tree.createTextNode( 'hello' )
+
+        assert.equal( div.tagName, 'div' )
+        assert.equal( text.tagName, undefined )
+      })
+
+      it( 'title', () => {
+        const { div } = Dom()
+        const div2 = Tree.createElement( 'div' )
+
+        assert.equal( div.title, 'bar' )
+        assert.equal( div2.title, '' )
+
+        div2.title = 'foo'
+        assert.equal( div2.title, 'foo' )
       })
     })
   })
 
-  describe( 'Parser', () => {
-    it( 'comment', () => {
-      const html = '<!--Hello-->'
-      const n = Tree.parse( html )
+  describe( 'node', () => {
+    describe( 'methods', () => {
+      describe( 'cloneNode', () => {
+        it( 'shallow', () => {
+          const div = Tree.createElement( 'div' )
+          const text = Tree.createTextNode( 'hello' )
 
-      assert( n.isComment() )
+          div.id = 'myDiv'
+          div.appendChild( text )
+
+          const clone = div.cloneNode()
+
+          assert.equal( clone.toString(), '<div id="myDiv"></div>' )
+          assert( div !== clone )
+        })
+
+        it( 'deep', () => {
+          const div = Tree.createElement( 'div' )
+          const text = Tree.createTextNode( 'hello' )
+
+          div.id = 'myDiv'
+          div.appendChild( text )
+
+          const clone = div.cloneNode( true )
+
+          assert.equal( clone.toString(), '<div id="myDiv">hello</div>' )
+          assert( div !== clone )
+        })
+      })
+
+      it( 'isEqualNode', () => {
+        const div = Tree.createElement( 'div' )
+        const text = Tree.createTextNode( 'hello' )
+
+        div.id = 'myDiv'
+        div.appendChild( text )
+
+        const divClone = div.cloneNode( true )
+        const textClone = text.cloneNode()
+
+        assert( div.isEqualNode( divClone ) )
+        assert( text.isEqualNode( textClone ) )
+        assert( !div.isEqualNode( text ) )
+      })
+
+      it( 'isSameNode', () => {
+        const div = Tree.createElement( 'div' )
+        const divClone = div.cloneNode( true )
+
+        assert( div.isSameNode( div ) )
+        assert( !div.isSameNode( divClone ) )
+      })
+
+      it( 'normalize', () => {
+        const div = Tree.createElement( 'div' )
+        const span = Tree.createElement( 'span' )
+
+        div.appendChild( span )
+
+        const text = Tree.createTextNode( 'hello' )
+        const text2 = Tree.createTextNode( '' )
+        const text3 = Tree.createTextNode( ' ' )
+        const text4 = Tree.createTextNode( '' )
+        const text5 = Tree.createTextNode( 'world' )
+
+        span.append( text, text2, text3, text4, text5 )
+
+        const text6 = Tree.createTextNode( '' )
+
+        div.append( text6 )
+
+        div.normalize()
+
+        assert.equal( div.childNodes.length, 1 )
+        assert.equal( span.childNodes.length, 1 )
+        assert.equal( span.firstChild.nodeValue, 'hello world' )
+      })
+
+      it( 'toString', () => {
+        const div = Tree.createElement( 'div' )
+
+        assert.equal( div.toString(), '<div></div>' )
+      })
+
+      it( 'whitespace', () => {
+        const dom = Tree.parse( '    <div>    \n</div>\r\n\t  ' )
+
+        dom.whitespace({ normalizeWhitespace: true })
+
+        assert.equal( dom.toString(), ' <div> </div> ' )
+      })
     })
 
-    it( 'processing instruction to comment', () => {
-      const html = '<? Hello ?>'
-      const n = Tree.parse( html )
+    describe( 'properties', () => {
+      it( 'baseURI', () => {
+        const div = Tree.createElement( 'div' )
 
-      assert( n.isComment() )
-    })
+        assert.equal( div.baseURI, '/' )
+      })
 
-    it( 'removeWhitespace', () => {
-      const html = '\n  <div>Hello</div> <p>  \n  </p> <span>World</span>  \n  '
-      const n = Tree.parse( html, { removeWhitespace: true } )
+      it( 'innerText', () => {
+        const div = Tree.createElement( 'div' )
+        const span = Tree.createElement( 'span' )
+        const text = Tree.createTextNode( 'hello' )
 
-      assert.equal( n.stringify(), '<div>Hello</div><p></p><span>World</span>' )
-    })
+        div.appendChild( span )
+        span.appendChild( text )
 
-    it( 'ignoreWhitespace', () => {
-      const html = '  \n\t<div>Hello</div> \n  \r  <span>World</span>  '
-      const n = Tree.parse( html, { ignoreWhitespace: true } )
+        assert.equal( div.innerText, 'hello' )
 
-      assert.equal( n.stringify(), ' <div>Hello</div> <span>World</span> ' )
-    })
+        div.innerText = 'world'
 
-    it( 'calls DomHandler onerror', () => {
-      const DomHandler = require( '../src/domhandler-adapter' )
-      const htmlparser2 = require( 'htmlparser2' )
+        assert.equal( div.childNodes.length, 1 )
+        assert( div.firstChild.isTextNode() )
+        assert.equal( div.firstChild.nodeValue, 'world' )
+      })
 
-      const handler = DomHandler( Tree )
+      it( 'nodeName', () => {
+        const div = Tree.createElement( 'div' )
 
-      const parser = new htmlparser2.Parser( handler )
+        assert.equal( div.nodeName, 'div' )
+      })
 
-      parser.end( '<div></div>' )
+      it( 'nodeValue', () => {
+        const text = Tree.createTextNode( 'hello' )
 
-      assert.throws( () => parser.write( '<div></div>' ) )
+        assert.equal( text.nodeValue, 'hello' )
+      })
+
+      it( 'ownerDocument', () => {
+        const document = Tree.createDocument()
+        const div = Tree.createElement( 'div' )
+
+        document.appendChild( div )
+
+        assert.equal( div.ownerDocument, document )
+      })
+
+      it( 'parentElement', () => {
+        const div = Tree.createElement( 'div' )
+        const text = Tree.createTextNode( 'hello' )
+
+        div.appendChild( text )
+
+        assert.equal( text.parentElement, div )
+        assert.equal( div.parentElement, null )
+      })
+
+      it( 'textContent', () => {
+        const div = Tree.createElement( 'div' )
+        const span = Tree.createElement( 'span' )
+        const text = Tree.createTextNode( 'hello' )
+
+        div.appendChild( span )
+        span.appendChild( text )
+
+        assert.equal( div.textContent, 'hello' )
+
+        div.textContent = 'world'
+
+        assert.equal( div.childNodes.length, 1 )
+        assert( div.firstChild.isTextNode() )
+        assert.equal( div.firstChild.nodeValue, 'world' )
+      })
     })
   })
 
-  testHFactory()
-  */
+  describe( 'statics', () => {
+    describe( 'parse', () => {
+      it( 'comment', () => {
+        const comment = Tree.parse( '<!-- hello -->' )
+
+        assert( comment.isCommentNode() )
+      })
+
+      it( 'doctype', () => {
+        const doctype = Tree.parse( '<!doctype html>' )
+
+        assert( doctype.isDocumentTypeNode() )
+      })
+
+      it( 'processing instruction', () => {
+        const pi = Tree.parse( '<?hello world ?>' )
+
+        // todo
+        assert( pi.isCommentNode() )
+      })
+    })
+
+    describe( 'h', () => {
+      it( 'h', () => {
+        const { h } = Tree
+
+        const {
+          document, documentType, documentFragment, text, comment,
+          element
+        } = h
+
+        const docType = documentType( 'silly' )
+        const div = element(
+          'div',
+          { id: 'myBox' },
+          text( 'delicious ' ),
+          'cheese'
+        )
+
+        const doc = document(
+          docType,
+          documentFragment(
+            comment( 'so silly' ),
+            div
+          )
+        )
+
+        const expect = '<!doctype silly><!--so silly--><div id="myBox">delicious cheese</div>'
+
+        assert.equal( doc.toString(), expect )
+      })
+    })
+  })
 })
 
 const testHFactory = () => {

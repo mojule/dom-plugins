@@ -36,12 +36,6 @@ const Api = handler => {
   const onend = () => {
     handler.state.done = true
     handler.state.parser = null
-
-    onerror( null )
-  }
-
-  const onerror = err => {
-    if( err ) throw err
   }
 
   const onclosetag = () => tagStack.pop()
@@ -86,8 +80,8 @@ const Api = handler => {
   const getDom = () => handler.state.fragment
 
   const api = {
-    onend, onerror, onclosetag, onopentag, ontext, oncomment,
-    oncommentend, onprocessinginstruction, getDom
+    onend, onclosetag, onopentag, ontext, oncomment, oncommentend,
+    onprocessinginstruction, getDom
   }
 
   return api

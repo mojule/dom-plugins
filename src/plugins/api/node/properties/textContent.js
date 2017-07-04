@@ -18,7 +18,7 @@ const textContent = ({ api, core, Api }) => {
         return api.data
 
       return api.dfsNodes.reduce( ( text, current ) => {
-        if( api.isTextNode() )
+        if( current.isTextNode() )
           text += current.nodeValue
 
         return text

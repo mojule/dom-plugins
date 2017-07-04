@@ -3,9 +3,9 @@
 const tagName = ({ api, state, core }) => {
   if( !api.isElementNode() ) return
 
-  core.addProperty({
+  core.registerProperty({
     target: api,
-    name: tagName,
+    name: 'tagName',
     get: () => state.value.tagName
   })
 }

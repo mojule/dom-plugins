@@ -2,7 +2,7 @@
 
 const is = require( '@mojule/is' )
 const utils = require( '@mojule/utils' )
-const preserveWhitespace = require( './preserve-whitespace' )
+const preserveWhitespace = require( '../../../preserve-whitespace' )
 
 const { escapeHtml } = utils
 
@@ -16,37 +16,35 @@ const defaultOptions = {
   normalizeWhitespace: true
 }
 
-const stringify = node => {
-  return {
-    stringify: ( options = {} ) => {
-      options = Object.assign( {}, defaultOptions, options )
+const toString = ({ api }) => {
+  api.toString = ( options = {} ) => {
+    options = Object.assign( {}, defaultOptions, options )
 
-      const isPretty = options.pretty && is.function( node.isInline )
+    const isPretty = options.pretty && is.function( api.isInlineNode )
 
-      const arr = []
+    const arr = []
 
-      if( isPretty ){
-        node.whitespace( options )
-        addPretty( arr, node, options )
-      } else {
-        addNode( arr, node )
-      }
-
-      return arr.join( '' )
+    if( isPretty ){
+      api.whitespace( options )
+      addPretty( arr, api, options )
+    } else {
+      addNode( arr, api )
     }
+
+    return arr.join( '' )
   }
 }
 
-const text = node => escapeHtml( node.nodeValue() )
+const text = node => escapeHtml( node.nodeValue )
 
-const comment = node => `<!--${ node.nodeValue() }-->`
+const comment = node => `<!--${ node.nodeValue }-->`
 
 const doctype = node => {
   let ml = ''
 
-  const { name, publicId, systemId } = node.getValue()
+  const { qualifiedNameStr, publicId, systemId } = node.value
 
-  ml += `<!doctype ${ name }`
+  ml += `<!doctype ${ qualifiedNameStr }`
 
   if( publicId ){
     ml += ` public "${ publicId }"`
@@ -62,9 +60,9 @@ const doctype = node => {
 }
 
 const openTag = node => {
-  let ml = `<${ node.tagName() }`
+  let ml = `<${ node.tagName }`
 
-  const attributes = node.getAttributes()
+  const { attributes } = node.value
 
   Object.keys( attributes ).forEach( name => {
     const value = attributes[ name ]
@@ -80,24 +78,24 @@ const openTag = node => {
   return ml
 }
 
-const closeTag = node => node.isEmpty() ? '' : `</${ node.tagName() }>`
+const closeTag = node => node.isEmpty() ? '' : `</${ node.tagName }>`
 
 const addNode = ( arr, node ) => {
-  const isElement = node.isElement()
+  const isElement = node.isElementNode()
 
-  if( node.isText() ){
+  if( node.isTextNode() ){
     arr.push( text( node ) )
 
     return
   }
 
-  if( node.isComment() ){
+  if( node.isCommentNode() ){
     arr.push( comment( node ) )
 
     return
   }
 
-  if( node.isDocumentType() ){
+  if( node.isDocumentTypeNode() ){
     arr.push( doctype( node ) )
 
     return
@@ -107,7 +105,7 @@ const addNode = ( arr, node ) => {
     arr.push( openTag( node ) )
   }
 
-  node.getChildren().forEach( child => {
+  node.childNodes.forEach( child => {
     addNode( arr, child )
   })
 
@@ -119,39 +117,39 @@ const addNode = ( arr, node ) => {
 const addPretty = ( arr, node, options ) => {
   const { depth, indent, eol, wrapAt, preserveWhitespace } = options
 
-  const isElement = node.isElement()
+  const isElement = node.isElementNode()
   const indentation = indent.repeat( depth )
 
-  if( node.isText() ){
+  if( node.isTextNode() ){
     arr.push( indentation + text( node ) + eol )
 
     return
   }
 
-  if( node.isComment() ){
+  if( node.isCommentNode() ){
     arr.push( indentation + comment( node ) + eol )
 
     return
   }
 
-  if( node.isDocumentType() ){
+  if( node.isDocumentTypeNode() ){
     arr.push( indentation + doctype( node ) + eol )
 
     return
   }
 
-  if( !node.isElement() ){
-    node.getChildren().forEach( child => {
+  if( !node.isElementNode() ){
+    node.childNodes.forEach( child => {
       addPretty( arr, child, options )
     })
 
     return
   }
 
-  if( preserveWhitespace.includes( node.tagName() ) ){
+  if( preserveWhitespace.includes( node.tagName ) ){
     arr.push( indentation + openTag( node ) )
 
-    node.getChildren().forEach( child =>
+    node.childNodes.forEach( child =>
       addNode( arr, child )
     )
 
@@ -160,8 +158,8 @@ const addPretty = ( arr, node, options ) => {
     return
   }
 
-  const isAllInline = node.getChildren().every(
-    child => child.isInline() || child.isText()
+  const isAllInline = node.childNodes.every(
+    child => child.isInlineNode() || child.isTextNode()
   )
 
   const childOptions = Object.assign( {}, options, { depth: depth + 1 } )
@@ -169,7 +167,7 @@ const addPretty = ( arr, node, options ) => {
   if( !isAllInline ){
     arr.push( indentation + openTag( node ) + eol )
 
-    node.getChildren().forEach( child =>
+    node.childNodes.forEach( child =>
       addPretty( arr, child, childOptions )
     )
 
@@ -183,7 +181,7 @@ const addPretty = ( arr, node, options ) => {
 
   const children = []
 
-  node.getChildren().forEach( child => {
+  node.childNodes.forEach( child => {
     addNode( children, child )
   })
 
@@ -248,4 +246,4 @@ const pushWrapped = ( arr, children, options ) => {
   )
 }
 
-module.exports = stringify
+module.exports = toString

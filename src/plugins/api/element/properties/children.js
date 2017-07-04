@@ -6,7 +6,7 @@ const children = ({ api, core }) => {
   core.registerProperty({
     target: api,
     name: 'children',
-    get: () => api.childNodes.filter( current => current.isElementNode() )
+    get: () => api.elementChildNodes
   })
 }
 

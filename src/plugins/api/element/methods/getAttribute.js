@@ -17,7 +17,7 @@ const getAttribute = ({ api, state, core }) => {
     const value = state.value.attributes[ name ]
     const attribute = core.attribute( name )
 
-    return attribute.toString( value )
+    return attribute.stringify( value )
   }
 }
 

@@ -12,9 +12,7 @@ const nodeType = ({ core }) => {
     // if it's a registered element isEmpty and accepts will be overridden
     isEmpty: () => false,
     accepts: ( parent, child ) => true,
-    create: tagName => ({ tagName, attributes: {
-      class: []
-    }})
+    create: ( tagName, attributes = {} ) => ({ tagName, attributes })
   })
 
   core.registerNodeType({

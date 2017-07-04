@@ -5,14 +5,14 @@ const is = require( '@mojule/is' )
 const attribute = ({ core }) => {
   const attributes = new Map()
 
-  core.registerAttribute = ({
+  const Attribute = ({
     name,
     isBoolean = false,
     isProperty = true,
     propertyName = () => name,
     rawProperty = false,
     parse = str => str,
-    toString = value => value.toString(),
+    stringify = value => value.toString(),
     nodeHas = node => true
   }) => {
     if( !is.string( name ) )
@@ -20,23 +20,33 @@ const attribute = ({ core }) => {
 
     name = name.toLowerCase()
 
+    return {
+      name, isBoolean, isProperty, propertyName, parse, stringify, nodeHas
+    }
+  }
+
+  core.registerAttribute = ( data ) => {
+    const attribute = Attribute( data )
+    const { name } = attribute
+
     if( attributes.has( name ) )
       throw Error(
-        `attribute ${ name } is already registered`
+        `Attribute ${ name } is already registered`
       )
 
-    attributes.set( name, {
-      isBoolean, isProperty, propertyName, parse, toString, nodeHas
-    })
+    attributes.set( name, attribute )
   }
 
   core.attribute = name => {
     name = name.toLowerCase()
 
-    return attributes.get( name )
+    if( attributes.has( name ) )
+      return attributes.get( name )
+
+    return Attribute({ name })
   }
 
-  core.addAttributeProperty = ({ target, name }) => {
+  core.addAttributeProperty = ( target, name ) => {
     name = name.toLowerCase()
 
     const attribute = core.attribute( name )
@@ -48,7 +58,7 @@ const attribute = ({ core }) => {
       get = () => state.value.attributes[ name ]
       set = value => state.value.attributes[ name ]
     } else {
-      get = () => attribute.toString( state.value.attributes[ name ] )
+      get = () => attribute.stringify( state.value.attributes[ name ] )
       set = value => state.value.attributes[ name ] = attribute.parse( value )
     }
 

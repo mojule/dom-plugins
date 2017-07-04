@@ -6,7 +6,7 @@ const childElementCount = ({ api, core }) => {
   core.registerProperty({
     target: api,
     name: 'childElementCount',
-    get: () => api.childNodes.filter( current => current.isElementNode() ).length
+    get: () => api.elementChildNodes.length
   })
 }
 

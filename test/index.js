@@ -9,78 +9,94 @@ const Tree = Factory( plugins )
 
 describe( 'DOM plugins', () => {
   describe( 'types', () => {
-    it( 'createText', () => {
+    describe( 'text', () => {
       const node = Tree.createText( 'test' )
 
-      assert( node.isText() )
-      assert( node.isEmpty() )
-      assert.equal( node.stringify(), 'test' )
-      assert.equal( node.nodeValue(), 'test' )
-      assert.equal( node.nodeName(), '#text' )
+      it( 'isTextNode', () => {
+        assert( node.isTextNode() )
+      })
+
+      it( 'isEmpty', () => {
+        assert( node.isEmpty() )
+      })
+
+      it( 'toString', () => {
+        const str = node.toString()
+        assert.equal( str, 'test' )
+      })
+
+      it( 'nodeValue', () => {
+        assert.equal( node.nodeValue, 'test' )
+      })
+
+      it( 'nodeName', () => {
+        assert.equal( node.nodeName, '#text' )
+      })
     })
 
     it( 'createComment', () => {
       const node = Tree.createComment( 'test' )
 
-      assert( node.isComment() )
+      assert( node.isCommentNode() )
       assert( node.isEmpty() )
-      assert.equal( node.stringify(), '<!--test-->' )
-      assert.equal( node.nodeValue(), 'test' )
-      assert.equal( node.nodeName(), '#comment' )
+      assert.equal( node.toString(), '<!--test-->' )
+      assert.equal( node.nodeValue, 'test' )
+      assert.equal( node.nodeName, '#comment' )
     })
 
     it( 'createDocumentFragment', () => {
       const node = Tree.createDocumentFragment()
 
-      assert( node.isDocumentFragment() )
+      assert( node.isDocumentFragmentNode() )
       assert( !node.isEmpty() )
-      assert.equal( node.nodeName(), '#document-fragment' )
+      assert.equal( node.nodeName, '#document-fragment' )
     })
 
     it( 'createDocumentType', () => {
       const node = Tree.createDocumentType( 'html' )
 
-      assert( node.isDocumentType() )
+      assert( node.isDocumentTypeNode() )
       assert( node.isEmpty() )
-      assert.equal( node.stringify(), '<!doctype html>' )
-      assert.equal( node.nodeName(), 'html' )
+      assert.equal( node.toString(), '<!doctype html>' )
+      assert.equal( node.nodeName, 'html' )
     })
 
     it( 'createDocument', () => {
       const node = Tree.createDocument()
 
-      assert( node.isDocument() )
-      assert( !node.isElement() )
+      assert( node.isDocumentNode() )
+      assert( !node.isElementNode() )
       assert( !node.isEmpty() )
-      assert.equal( node.nodeName(), '#document' )
+      assert.equal( node.nodeName, '#document' )
     })
 
     it( 'createElement', () => {
       const node = Tree.createElement( 'div', { id: 'myDiv' } )
 
-      assert( node.isElement() )
+      assert( node.isElementNode() )
       assert( !node.isEmpty() )
-      assert.equal( node.stringify(), '<div id="myDiv"></div>' )
-      assert.equal( node.nodeName(), 'div' )
-      assert.equal( node.tagName(), 'div' )
+      assert.equal( node.toString(), '<div id="myDiv"></div>' )
+      assert.equal( node.nodeName, 'div' )
+      assert.equal( node.tagName, 'div' )
     })
   })
 
+
   describe( 'Attributes', () => {
+    it( 'getAttribute', () => {
+      const node = Tree.createElement( 'div', { id: 'myDiv' } )
+      const id = node.getAttribute( 'id' )
+
+      assert.strictEqual( id, "myDiv" )
+    })
+
     it( 'getAttributes', () => {
       const node = Tree.createElement( 'div', { id: 'myDiv' } )
 
       assert.deepEqual( node.getAttributes(), { id: "myDiv" } )
-
-      node.setValue( 'attributes', [] )
-
-      assert.throws( () => node.getAttributes() )
-
-      const something = Tree( { nodeType: 'something' } )
-
-      assert.deepEqual( something.getAttributes(), {} )
     })
 
+    /*
     it( 'setAttributes', () => {
       const node = Tree.createElement( 'div' )
 
@@ -187,7 +203,10 @@ describe( 'DOM plugins', () => {
 
       assert.throws( () => Tree.attributesToValue() )
     })
+    */
   })
+
+  /*
 
   describe( 'Classes', () => {
     it( 'classNames', () => {
@@ -659,6 +678,11 @@ describe( 'DOM plugins', () => {
     })
   })
 
+  testHFactory()
+  */
+})
+
+const testHFactory = () => {
   describe( 'H Factory', () => {
     it( 'Takes custom nodeNames', () => {
       const tagNames = [ 'box', 'hat', 'cheese' ]
@@ -804,4 +828,4 @@ describe( 'DOM plugins', () => {
       assert.equal( textOnly.stringify( { pretty: true } ), 'Hello World!\n' )
     })
   })
-})
+}

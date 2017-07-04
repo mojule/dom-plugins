@@ -3,14 +3,12 @@
 const defaultAttributes = ({ core }) => {
   core.registerAttribute({
     name: 'class',
-    propertyName: () => 'className',
-    parse: str => str.split( ' ' ),
-    toString: value => value.join( ' ' )
+    propertyName: () => 'className'
   })
 
-  core.registerAttribute({
-    name: 'id'
-  })
+  core.registerAttribute({ name: 'id' })
+  core.registerAttribute({ name: 'name' })
+  core.registerAttribute({ name: 'title' })
 }
 
 module.exports = defaultAttributes

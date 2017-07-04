@@ -2,6 +2,7 @@
 
 const closest = require( './element/methods/closest' )
 const getAttribute = require( './element/methods/getAttribute' )
+const getAttributes = require( './element/methods/getAttributes' )
 const getElementsByClassName = require( './element/methods/getElementsByClassName' )
 const getElementsByTagName = require( './element/methods/getElementsByTagName' )
 const hasAttribute = require( './element/methods/hasAttribute' )
@@ -13,6 +14,7 @@ const removeAttribute = require( './element/methods/removeAttribute' )
 const select = require( './element/methods/select' )
 const selectAll = require( './element/methods/selectAll' )
 const setAttribute = require( './element/methods/setAttribute' )
+const setAttributes = require( './element/methods/setAttributes' )
 
 const attributes = require( './element/properties/attributes' )
 const childElementCount = require( './element/properties/childElementCount' )
@@ -35,6 +37,8 @@ const cloneNode = require( './node/methods/cloneNode' )
 const isEqualNode = require( './node/methods/isEqualNode' )
 const isSameNode = require( './node/methods/isSameNode' )
 const normalize = require( './node/methods/normalize' )
+const toString = require( './node/methods/toString' )
+const whitespace = require( './node/methods/whitespace' )
 
 const baseURI = require( './node/properties/baseURI' )
 const innerText = require( './node/properties/innerText' )
@@ -43,19 +47,18 @@ const nodeValue = require( './node/properties/nodeValue' )
 const ownerDocument = require( './node/properties/ownerDocument' )
 const parentElement = require( './node/properties/parentElement' )
 const textContent = require( './node/properties/textContent' )
-const value = require( './node/properties/value' )
 
 module.exports = [
-  closest, getAttribute, getElementsByClassName, getElementsByTagName,
-  hasAttribute, hasAttributes, matches, querySelector, querySelectorAll,
-  removeAttribute, select, selectAll, setAttribute,
+  closest, getAttribute, getAttributes, getElementsByClassName,
+  getElementsByTagName, hasAttribute, hasAttributes, matches, querySelector,
+  querySelectorAll, removeAttribute, select, selectAll, setAttribute,
 
   attributes, childElementCount, children, classList, className, dataset,
   firstElementChild, id, innerHTML, lastElementChild, name, nextElementSibling,
   outerHTML, previousElementSibling, tagName, title,
 
-  cloneNode, isEqualNode, isSameNode, normalize,
+  cloneNode, isEqualNode, isSameNode, normalize, toString, whitespace,
 
   baseURI, innerText, nodeName, nodeValue, ownerDocument, parentElement,
-  textContent, value
+  textContent
 ]

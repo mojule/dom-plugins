@@ -15,7 +15,7 @@ const attributes = ({ api, state, core }) => {
     name: 'attributes',
     get: () => nodeList( entries( state.value.attributes ) ).map( pair => {
       const name = pair[ 0 ]
-      const value = attribute.toString( pair[ 1 ] )
+      const value = attribute.stringify( pair[ 1 ] )
 
       return { name, value }
     })

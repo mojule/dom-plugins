@@ -35,6 +35,7 @@ const title = require( './element/properties/title' )
 
 const cloneNode = require( './node/methods/cloneNode' )
 const isEqualNode = require( './node/methods/isEqualNode' )
+const isInlineNode = require( './node/methods/isInlineNode' )
 const isSameNode = require( './node/methods/isSameNode' )
 const normalize = require( './node/methods/normalize' )
 const toString = require( './node/methods/toString' )
@@ -58,7 +59,8 @@ module.exports = [
   firstElementChild, id, innerHTML, lastElementChild, name, nextElementSibling,
   outerHTML, previousElementSibling, tagName, title,
 
-  cloneNode, isEqualNode, isSameNode, normalize, toString, whitespace,
+  cloneNode, isEqualNode, isInlineNode, isSameNode, normalize, toString,
+  whitespace,
 
   baseURI, innerText, nodeName, nodeValue, ownerDocument, parentElement,
   textContent

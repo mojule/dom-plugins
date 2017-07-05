@@ -2,6 +2,7 @@
 
 const assert = require( 'assert' )
 const Factory = require( '@mojule/tree' ).Factory
+const html = require( '@mojule/html' )
 const is = require( '@mojule/is' )
 const plugins = require( '../src' )
 
@@ -108,19 +109,36 @@ describe( 'DOM plugins', () => {
     }
 
     describe( 'methods', () => {
-      it( 'closest', () => {
-        const { div, strong, p } = Dom()
+      describe( 'closest', () => {
+        it( 'existing', () => {
+          const { div, strong, p } = Dom()
 
-        const target = strong.closest( 'p' )
+          const target = strong.closest( 'p' )
 
-        assert.equal( target, p )
+          assert.equal( target, p )
+        })
+
+        it( 'non existing', () => {
+          const { div } = Dom()
+          const target = div.closest( 'nope' )
+
+          assert.strictEqual( target, null )
+        })
       })
 
-      it( 'getAttribute', () => {
-        const { div } = Dom()
-        const id = div.getAttribute( 'id' )
+      describe( 'getAttribute', () => {
+        it( 'existing', () => {
+          const { div } = Dom()
+          const id = div.getAttribute( 'id' )
 
-        assert.strictEqual( id, "myDiv" )
+          assert.strictEqual( id, "myDiv" )
+        })
+
+        it( 'bad arg', () => {
+          const { div } = Dom()
+
+          assert.throws( () => div.getAttribute() )
+        })
       })
 
       it( 'getAttributes', () => {
@@ -132,32 +150,68 @@ describe( 'DOM plugins', () => {
         )
       })
 
-      it( 'getElementsByClassName', () => {
-        const { div, span, strong } = Dom()
+      describe( 'getElementsByClassName', () => {
+        it( 'gets elements', () => {
+          const { div, span, strong } = Dom()
+          const els = div.getElementsByClassName( 'bar' )
 
-        const els = div.getElementsByClassName( 'bar' )
+          assert.deepEqual( Array.from( els ), [ span, strong ] )
+        })
 
-        assert.deepEqual( Array.from( els ), [ span, strong ] )
+        it( 'is live node list', () => {
+          const { div, span, strong } = Dom()
+          const els = div.getElementsByClassName( 'bar' )
+          const liveNode = Tree.createElement( 'div', { class: 'bar' } )
 
-        const liveNode = Tree.createElement( 'div', { class: 'bar' } )
+          strong.appendChild( liveNode )
 
-        strong.appendChild( liveNode )
+          assert.deepEqual( Array.from( els ), [ span, strong, liveNode ] )
+        })
 
-        assert.deepEqual( Array.from( els ), [ span, strong, liveNode ] )
+        it( 'bad arg', () => {
+          const { div } = Dom()
+
+          assert.throws( () => div.getElementsByClassName() )
+        })
       })
 
-      it( 'getElementsByTagName', () => {
-        const { div, strong, strong2 } = Dom()
+      describe( 'getElementsByTagName', () => {
+        it( 'gets elements', () => {
+          const { div, strong, strong2 } = Dom()
+          const els = div.getElementsByTagName( 'strong' )
 
-        const els = div.getElementsByTagName( 'strong' )
+          assert.deepEqual( Array.from( els ), [ strong, strong2 ] )
+        })
 
-        assert.deepEqual( Array.from( els ), [ strong, strong2 ] )
+        it( 'glob', () => {
+          const { div, p, div2, span, strong, strong2 } = Dom()
+          const els = div.getElementsByTagName( '*' )
 
-        const liveNode = Tree.createElement( 'strong' )
+          assert.deepEqual( Array.from( els ), [ p, div2, span, strong, strong2 ] )
+        })
 
-        strong2.appendChild( liveNode )
+        it( 'is live node list', () => {
+          const { div, strong, strong2 } = Dom()
+          const els = div.getElementsByTagName( 'strong' )
+          const liveNode = Tree.createElement( 'strong' )
 
-        assert.deepEqual( Array.from( els ), [ strong, strong2, liveNode ] )
+          strong2.appendChild( liveNode )
+
+          assert.deepEqual( Array.from( els ), [ strong, strong2, liveNode ] )
+        })
+
+        it( 'bad arg', () => {
+          const { div } = Dom()
+
+          assert.throws( () => div.getElementsByTagName() )
+        })
+      })
+
+      it( 'hasAttributes', () => {
+        const { div, p } = Dom()
+
+        assert( div.hasAttributes() )
+        assert( !p.hasAttributes() )
       })
 
       it( 'matches', () => {
@@ -199,35 +253,53 @@ describe( 'DOM plugins', () => {
         assert.deepEqual( Array.from( target2 ), [ div2 ] )
       })
 
-      it( 'removeAttribute', () => {
-        const { div } = Dom()
+      describe( 'removeAttribute', () => {
+        it( 'removes', () => {
+          const { div } = Dom()
 
-        div.removeAttribute( 'title' )
+          div.removeAttribute( 'title' )
 
-        assert.deepEqual(
-          div.getAttributes(),
-          { id: 'myDiv', class: 'foo baz qux' }
-        )
+          assert.deepEqual(
+            div.getAttributes(),
+            { id: 'myDiv', class: 'foo baz qux' }
+          )
+        })
+
+        it( 'bad arg', () => {
+          const { div } = Dom()
+
+          assert.throws( () => div.removeAttribute() )
+        })
       })
 
       it( 'select', () => {
-        const { div } = Dom()
+        const { div, p } = Dom()
 
         assert.equal( div.select( 'div' ), div )
+        assert.equal( div.select( 'p' ), p )
       })
 
       it( 'selectAll', () => {
-        const { div, div2 } = Dom()
+        const { div, div2, strong, strong2 } = Dom()
 
         assert.deepEqual( Array.from( div.selectAll( 'div' ) ), [ div, div2 ] )
+        assert.deepEqual( Array.from( div.selectAll( 'strong' ) ), [ strong, strong2 ] )
       })
 
-      it( 'setAttribute', () => {
-        const node = Tree.createElement( 'div' )
+      describe( 'setAttribute', () => {
+        it( 'sets', () => {
+          const node = Tree.createElement( 'div' )
 
-        node.setAttribute( 'id', 'myDiv' )
+          node.setAttribute( 'id', 'myDiv' )
 
-        assert.deepEqual( node.getAttributes(), { id: "myDiv" } )
+          assert.deepEqual( node.getAttributes(), { id: "myDiv" } )
+        })
+
+        it( 'bad arg', () => {
+          const { div } = Dom()
+
+          assert.throws( () => div.setAttribute() )
+        })
       })
 
       it( 'setAttributes', () => {
@@ -280,10 +352,13 @@ describe( 'DOM plugins', () => {
 
         it( 'add', () => {
           const { div } = Dom()
+          const div2 = Tree.createElement( 'div' )
 
           div.classList.add( 'new' )
+          div2.classList.add( 'new' )
 
           assert( div.classList.contains( 'new' ) )
+          assert( div2.classList.contains( 'new' ) )
         })
 
         it( 'remove', () => {
@@ -423,16 +498,28 @@ describe( 'DOM plugins', () => {
         assert.equal( span.nextElementSibling, strong )
       })
 
-      it( 'outerHTML', () => {
-        const { div2 } = Dom()
+      describe( 'outerHTML', () => {
+        it( 'gets', () => {
+          const { div2 } = Dom()
+          const parent = div2.parentNode
 
-        const parent = div2.parentNode
+          assert.equal( div2.outerHTML, div2.toString() )
+        })
 
-        assert.equal( div2.outerHTML, div2.toString() )
+        it( 'sets', () => {
+          const { div2 } = Dom()
+          const parent = div2.parentNode
 
-        div2.outerHTML = '<p>Hello</p>'
+          div2.outerHTML = '<p>Hello</p>'
 
-        assert.equal( parent.innerHTML, '<p>Hello</p>' )
+          assert.equal( parent.innerHTML, '<p>Hello</p>' )
+        })
+
+        it( 'throws on root', () => {
+          const { div } = Dom()
+
+          assert.throws( () => div.outerHTML = '<p></p>' )
+        })
       })
 
       it( 'previousElementSibling', () => {
@@ -492,19 +579,45 @@ describe( 'DOM plugins', () => {
         })
       })
 
-      it( 'isEqualNode', () => {
-        const div = Tree.createElement( 'div' )
-        const text = Tree.createTextNode( 'hello' )
+      describe( 'isEqualNode', () => {
+        it( 'is same node', () => {
+          const div = Tree.createElement( 'div' )
 
-        div.id = 'myDiv'
-        div.appendChild( text )
+          assert( div.isEqualNode( div ) )
+        })
 
-        const divClone = div.cloneNode( true )
-        const textClone = text.cloneNode()
+        it( 'different node types not equal', () => {
+          const div = Tree.createElement( 'div' )
+          const text = Tree.createTextNode( 'hello' )
 
-        assert( div.isEqualNode( divClone ) )
-        assert( text.isEqualNode( textClone ) )
-        assert( !div.isEqualNode( text ) )
+          assert( !div.isEqualNode( text ) )
+        })
+
+        it( 'different tags not equal', () => {
+          const div = Tree.createElement( 'div' )
+          const span = Tree.createElement( 'span' )
+
+          assert( !div.isEqualNode( span ) )
+        })
+
+        it( 'clone is equal', () => {
+          const div = Tree.createElement( 'div' )
+          const text = Tree.createTextNode( 'hello' )
+
+          div.id = 'myDiv'
+          div.appendChild( text )
+
+          const divClone = div.cloneNode( true )
+
+          assert( div.isEqualNode( divClone ) )
+        })
+
+        it( 'text nodes are equal', () => {
+          const text = Tree.createTextNode( 'hello' )
+          const textClone = text.cloneNode()
+
+          assert( text.isEqualNode( textClone ) )
+        })
       })
 
       it( 'isSameNode', () => {
@@ -540,10 +653,25 @@ describe( 'DOM plugins', () => {
         assert.equal( span.firstChild.nodeValue, 'hello world' )
       })
 
-      it( 'toString', () => {
-        const div = Tree.createElement( 'div' )
+      describe( 'toString', () => {
+        it( 'basic', () => {
+          const div = Tree.createElement( 'div' )
 
-        assert.equal( div.toString(), '<div></div>' )
+          assert.equal( div.toString(), '<div></div>' )
+        })
+
+        it( 'pretty', () => {
+          const div = Tree.createElement( 'div' )
+          const div2 = Tree.createElement( 'div' )
+          const text = Tree.createTextNode( 'hello' )
+
+          div.appendChild( div2 )
+          div2.appendChild( text )
+
+          const html = div.toString({ pretty: true })
+
+          assert.equal( html, '<div>\n  <div>hello</div>\n</div>\n' )
+        })
       })
 
       it( 'whitespace', () => {
@@ -652,7 +780,7 @@ describe( 'DOM plugins', () => {
     })
 
     describe( 'h', () => {
-      it( 'h', () => {
+      it( 'default', () => {
         const { h } = Tree
 
         const {

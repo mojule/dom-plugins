@@ -7,6 +7,7 @@ const getElementsByClassName = require( './element/methods/getElementsByClassNam
 const getElementsByTagName = require( './element/methods/getElementsByTagName' )
 const hasAttribute = require( './element/methods/hasAttribute' )
 const hasAttributes = require( './element/methods/hasAttributes' )
+const isElementNode = require( './element/methods/isElementNode' )
 const matches = require( './element/methods/matches' )
 const querySelector = require( './element/methods/querySelector' )
 const querySelectorAll = require( './element/methods/querySelectorAll' )
@@ -51,9 +52,9 @@ const textContent = require( './node/properties/textContent' )
 
 module.exports = [
   closest, getAttribute, getAttributes, getElementsByClassName,
-  getElementsByTagName, hasAttribute, hasAttributes, matches, querySelector,
-  querySelectorAll, removeAttribute, select, selectAll, setAttribute,
-  setAttributes,
+  getElementsByTagName, hasAttribute, hasAttributes, isElementNode, matches,
+  querySelector, querySelectorAll, removeAttribute, select, selectAll,
+  setAttribute, setAttributes,
 
   attributes, childElementCount, children, classList, className, dataset,
   firstElementChild, id, innerHTML, lastElementChild, name, nextElementSibling,

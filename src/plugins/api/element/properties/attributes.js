@@ -1,10 +1,5 @@
 'use strict'
 
-function* entries( obj ) {
-  for( let key of Object.keys( obj ) )
-    yield [ key, obj[ key ] ]
-}
-
 const attributes = ({ api, state, core }) => {
   if( !api.isElementNode() ) return
 
@@ -13,10 +8,10 @@ const attributes = ({ api, state, core }) => {
   core.registerProperty({
     target: api,
     name: 'attributes',
-    get: () => nodeList( entries( state.value.attributes ) ).map( pair => {
-      const name = pair[ 0 ]
+    get: () => nodeList( state.value.attributes ).map( ({ name, value }) => {
       const attribute = core.attribute( name )
-      const value = attribute.stringify( pair[ 1 ] )
+
+      value = attribute.stringify( value )
 
       return { name, value }
     })

@@ -315,17 +315,62 @@ describe( 'DOM plugins', () => {
     })
 
     describe( 'properties', () => {
-      it( 'attributes', () => {
-        const { div } = Dom()
+      describe( 'attributes', () => {
+        it( 'array from', () => {
+          const { div } = Dom()
 
-        assert.deepEqual(
-          Array.from( div.attributes ),
-          [
-            { name: 'id', value: 'myDiv' },
-            { name: 'class', value: 'foo baz qux' },
-            { name: 'title', value: 'bar' }
-          ]
-        )
+          assert.deepEqual(
+            Array.from( div.attributes ),
+            [
+              { name: 'id', value: 'myDiv' },
+              { name: 'class', value: 'foo baz qux' },
+              { name: 'title', value: 'bar' }
+            ]
+          )
+        })
+
+        it( 'indexer', () => {
+          const { div } = Dom()
+
+          assert.deepEqual(
+            div.attributes[ 0 ],
+            { name: 'id', value: 'myDiv' }
+          )
+        })
+
+        it( 'copied reference', () => {
+          const { div } = Dom()
+
+          const attr = div.attributes
+
+          assert.deepEqual(
+            attr[ 0 ],
+            { name: 'id', value: 'myDiv' }
+          )
+        })
+
+        it( 'iterate forward', () => {
+          const { div } = Dom()
+          const arr = div.attributes.toArray()
+          const attrs = div.attributes
+          const { length } = attrs
+
+          for( let i = 0; i < length; i++ ){
+            let attr = attrs[ i ]
+            assert.deepEqual( arr[ i ], attr )
+          }
+        })
+
+        it( 'iterate backward', () => {
+          const { div } = Dom()
+          const attrs = div.attributes
+          const arr = div.attributes.toArray()
+
+          for( let i = attrs.length - 1; i >= 0; --i ){
+            let attr = attrs[ i ]
+            assert.deepEqual( arr[ i ], attr )
+          }
+        })
       })
 
       it( 'childElementCount', () => {

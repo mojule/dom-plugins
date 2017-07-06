@@ -81,7 +81,8 @@ const openTag = node => {
 const closeTag = node => node.isEmpty() ? '' : `</${ node.tagName }>`
 
 const addNode = ( arr, node ) => {
-  const isElement = node.isElementNode()
+  // not ideal
+  const isElement = node.isElementNode() && node.nodeType === 1
 
   if( node.isTextNode() ){
     arr.push( text( node ) )
@@ -117,7 +118,7 @@ const addNode = ( arr, node ) => {
 const addPretty = ( arr, node, options ) => {
   const { depth, indent, eol, wrapAt, preserveWhitespace } = options
 
-  const isElement = node.isElementNode()
+  const isElement = node.isElementNode() && node.nodeType === 1
   const indentation = indent.repeat( depth )
 
   if( node.isTextNode() ){

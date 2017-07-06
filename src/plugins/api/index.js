@@ -51,10 +51,10 @@ const parentElement = require( './node/properties/parentElement' )
 const textContent = require( './node/properties/textContent' )
 
 module.exports = [
-  closest, getAttribute, getAttributes, getElementsByClassName,
-  getElementsByTagName, hasAttribute, hasAttributes, isElementNode, matches,
-  querySelector, querySelectorAll, removeAttribute, select, selectAll,
-  setAttribute, setAttributes,
+  isElementNode, closest, getAttribute, getAttributes, getElementsByClassName,
+  getElementsByTagName, hasAttribute, hasAttributes, matches, querySelector,
+  querySelectorAll, removeAttribute, select, selectAll, setAttribute,
+  setAttributes,
 
   attributes, childElementCount, children, classList, className, dataset,
   firstElementChild, id, innerHTML, lastElementChild, name, nextElementSibling,

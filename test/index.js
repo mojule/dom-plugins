@@ -54,6 +54,7 @@ describe( 'DOM plugins', () => {
       const node = Tree.createDocumentFragment()
 
       assert( node.isDocumentFragmentNode() )
+      assert( node.isElementNode() )
       assert( !node.isEmpty() )
       assert.equal( node.nodeName, '#document-fragment' )
       assert.equal( node.nodeType, Tree.DOCUMENT_FRAGMENT_NODE )
@@ -73,7 +74,7 @@ describe( 'DOM plugins', () => {
       const node = Tree.createDocument()
 
       assert( node.isDocumentNode() )
-      assert( !node.isElementNode() )
+      assert( node.isElementNode() )
       assert( !node.isEmpty() )
       assert.equal( node.nodeName, '#document' )
       assert.equal( node.nodeType, Tree.DOCUMENT_NODE )
@@ -679,7 +680,9 @@ describe( 'DOM plugins', () => {
 
         dom.whitespace({ normalizeWhitespace: true })
 
-        assert.equal( dom.toString(), ' <div> </div> ' )
+        const html = dom.toString()
+
+        assert.equal( html, ' <div> </div> ' )
       })
     })
 

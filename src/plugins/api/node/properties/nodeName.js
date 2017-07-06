@@ -1,16 +1,16 @@
 'use strict'
 
-const nodeName = ({ api, state, core }) => {
+const nodeName = ({ api, state, core, Api }) => {
   const { nodeName } = api
 
   core.registerProperty({
     target: api,
     name: 'nodeName',
     get: () => {
-      if( api.isElementNode() )
+      if( api.nodeType === Api.ELEMENT_NODE )
         return api.tagName
 
-      if( api.isDocumentTypeNode() )
+      if( api.nodeType === Api.DOCUMENT_TYPE_NODE )
         return state.value.name
 
       return nodeName

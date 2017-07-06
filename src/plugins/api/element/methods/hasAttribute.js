@@ -9,7 +9,8 @@ const hasAttribute = ({ api, state, core }) => {
   api.hasAttribute = name => {
     name = name.toLowerCase()
 
-    return !is.undefined( state.value.attributes[ name ] )
+    return is.object( state.value.attributes ) &&
+      !is.undefined( state.value.attributes[ name ] )
   }
 }
 

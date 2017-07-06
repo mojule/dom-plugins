@@ -53,8 +53,8 @@ const nodeType = ({ core }) => {
     nodeType: 10,
     name: 'document-type',
     isEmpty: () => true,
-    create: ( qualifiedNameStr, publicId, systemId ) =>
-      ({ qualifiedNameStr, publicId, systemId })
+    create: ( name, publicId, systemId ) =>
+      ({ name, publicId, systemId })
   })
 
   core.registerNodeType({

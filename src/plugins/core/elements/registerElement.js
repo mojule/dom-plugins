@@ -25,7 +25,7 @@ const element = ({ core }) => {
 
   core.isEmpty = node => {
     if( node.isElementNode() && elements.has( node.tagName ) )
-      return elements.get( node.tagName ).isEmpty( node )
+      return elements.get( node.tagName ).isEmpty
 
     return isEmpty( node )
   }

@@ -11,7 +11,7 @@ const nodeName = ({ api, state, core }) => {
         return api.tagName
 
       if( api.isDocumentTypeNode() )
-        return state.value.qualifiedNameStr
+        return state.value.name
 
       return nodeName
     }

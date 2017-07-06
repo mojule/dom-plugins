@@ -42,9 +42,9 @@ const comment = node => `<!--${ node.nodeValue }-->`
 const doctype = node => {
   let ml = ''
 
-  const { qualifiedNameStr, publicId, systemId } = node.value
+  const { name, publicId, systemId } = node.value
 
-  ml += `<!doctype ${ qualifiedNameStr }`
+  ml += `<!doctype ${ name }`
 
   if( publicId ){
     ml += ` public "${ publicId }"`

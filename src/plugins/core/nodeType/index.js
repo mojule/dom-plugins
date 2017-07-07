@@ -53,7 +53,7 @@ const nodeType = ({ core }) => {
     nodeType: 10,
     name: 'document-type',
     isEmpty: () => true,
-    create: ( name, publicId, systemId ) =>
+    create: ( name, publicId = '', systemId = '' ) =>
       ({ name, publicId, systemId })
   })
 

@@ -34,6 +34,11 @@ const previousElementSibling = require( './element/properties/previousElementSib
 const tagName = require( './element/properties/tagName' )
 const title = require( './element/properties/title' )
 
+const appendChild = require( './manipulation/appendChild' )
+const insertAfter = require( './manipulation/insertAfter' )
+const insertBefore = require( './manipulation/insertBefore' )
+const prependChild = require( './manipulation/prependChild' )
+
 const cloneNode = require( './node/methods/cloneNode' )
 const isEqualNode = require( './node/methods/isEqualNode' )
 const isInlineNode = require( './node/methods/isInlineNode' )

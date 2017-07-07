@@ -9,6 +9,8 @@ const matches = ({ api, state, core }) => {
   if( !api.isElementNode() ) return
 
   api.matches = selector => {
+    if( api.isDocumentFragmentNode() ) return false
+
     const { getApi } = core
     const current = getApi( state )
 

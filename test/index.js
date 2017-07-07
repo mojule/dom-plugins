@@ -215,14 +215,25 @@ describe( 'DOM plugins', () => {
         assert( !p.hasAttributes() )
       })
 
-      it( 'matches', () => {
-        const { div } = Dom()
+      describe( 'matches', () => {
+        it( 'element node', () => {
+          const { div } = Dom()
 
-        assert( !div.matches( 'span' ) )
-        assert( div.matches( 'div' ) )
-        assert( div.matches( '#myDiv' ) )
-        assert( div.matches( '.foo' ) )
-        assert( div.matches( '[title=bar]' ) )
+          assert( !div.matches( 'span' ) )
+          assert( div.matches( 'div' ) )
+          assert( div.matches( '#myDiv' ) )
+          assert( div.matches( '.foo' ) )
+          assert( div.matches( '[title=bar]' ) )
+        })
+
+        it( 'document fragment', () => {
+          const fragment = Tree.createDocumentFragment()
+
+          assert( !fragment.matches( 'span' ) )
+          assert( !fragment.matches( '#myDiv' ) )
+          assert( !fragment.matches( '.foo' ) )
+          assert( !fragment.matches( '[title=bar]' ) )
+        })
       })
 
       it( 'non standard contains selector', () => {
@@ -234,24 +245,32 @@ describe( 'DOM plugins', () => {
         assert( div.matches( ':contains(hello)' ) )
       })
 
-      it( 'querySelector', () => {
+      describe( 'querySelector', () => {
         const { div, strong, div2 } = Dom()
 
-        const target1 = div.querySelector( 'strong' )
-        const target2 = div.querySelector( 'div' )
+        it( 'selects descendant', () => {
+          const target1 = div.querySelector( 'strong' )
+          assert.equal( target1, strong )
+        })
 
-        assert.equal( target1, strong )
-        assert.equal( target2, div2 )
+        it( 'does not select self', () => {
+          const target2 = div.querySelector( 'div' )
+          assert.equal( target2, div2 )
+        })
       })
 
-      it( 'querySelectorAll', () => {
+      describe( 'querySelectorAll', () => {
         const { div, strong, strong2, div2 } = Dom()
 
-        const target1 = div.querySelectorAll( 'strong' )
-        const target2 = div.querySelectorAll( 'div' )
+        it( 'selects descendants', () => {
+          const target1 = div.querySelectorAll( 'strong' )
+          assert.deepEqual( Array.from( target1 ), [ strong, strong2 ] )
+        })
 
-        assert.deepEqual( Array.from( target1 ), [ strong, strong2 ] )
-        assert.deepEqual( Array.from( target2 ), [ div2 ] )
+        it( 'does not select self', () => {
+          const target2 = div.querySelectorAll( 'div' )
+          assert.deepEqual( Array.from( target2 ), [ div2 ] )
+        })
       })
 
       describe( 'removeAttribute', () => {

@@ -57,8 +57,17 @@ const attribute = ({ core }) => {
       get = () => target.value.attributes[ name ]
       set = value => target.value.attributes[ name ]
     } else {
-      get = () => attribute.stringify( target.value.attributes[ name ] )
-      set = value => target.value.attributes[ name ] = attribute.parse( value )
+      get = () => attribute.stringify(
+        target.value.attributes ? target.value.attributes[ name ] : ''
+      )
+      set = value => {
+        if( is.undefined( target.value.attributes ) )
+          target.value.attributes = {}
+
+        target.value.attributes[ name ] = attribute.parse( value )
+
+        return target.value.attributes[ name ]
+      }
     }
 
     core.registerProperty({ target, name: attribute.propertyName(), get, set })

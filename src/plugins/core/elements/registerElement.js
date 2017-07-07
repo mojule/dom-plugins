@@ -31,6 +31,10 @@ const element = ({ core }) => {
   }
 
   core.accepts = ( parent, child ) => {
+    // any node should accepts whitespace-only text nodes
+    if( !parent.isEmpty() && child.isTextNode() && child.nodeValue.trim() === '' )
+      return true
+
     if( parent.isElementNode() && elements.has( parent.tagName ) )
       return elements.get( parent.tagName ).accepts( parent, child )
 

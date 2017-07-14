@@ -54,7 +54,7 @@ describe( 'DOM plugins', () => {
       const node = Tree.createDocumentFragment()
 
       assert( node.isDocumentFragmentNode() )
-      assert( node.isElementNode() )
+      assert( !node.isElementNode() )
       assert( !node.isEmpty() )
       assert.equal( node.nodeName, '#document-fragment' )
       assert.equal( node.nodeType, Tree.DOCUMENT_FRAGMENT_NODE )

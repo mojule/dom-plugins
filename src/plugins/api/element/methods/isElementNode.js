@@ -6,8 +6,8 @@
 */
 const isElementNode = ({ api, Api }) => {
   const blacklist = [
-    Api.COMMENT_NODE, Api.DOCUMENT_TYPE_NODE, Api.PROCESSING_INSTRUCTION_NODE,
-    Api.TEXT_NODE, Api.DOCUMENT_FRAGMENT_NODE
+    Api.TEXT_NODE, Api.COMMENT_NODE, Api.DOCUMENT_FRAGMENT_NODE,
+    Api.DOCUMENT_NODE, Api.DOCUMENT_TYPE_NODE, Api.PROCESSING_INSTRUCTION_NODE
   ]
 
   api.isElementNode = () => !blacklist.includes( api.nodeType )

@@ -1,7 +1,10 @@
 'use strict'
 
 const select = ({ api, state, core }) => {
-  if( !api.isElementNode() ) return
+  const canSelect =
+    api.isElementNode() || api.isDocumentNode() || api.isDocumentFragmentNode()
+
+  if( !canSelect ) return
 
   api.select = selector => {
     const { getApi } = core

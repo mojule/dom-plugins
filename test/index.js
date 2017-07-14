@@ -74,7 +74,7 @@ describe( 'DOM plugins', () => {
       const node = Tree.createDocument()
 
       assert( node.isDocumentNode() )
-      assert( node.isElementNode() )
+      assert( !node.isElementNode() )
       assert( !node.isEmpty() )
       assert.equal( node.nodeName, '#document' )
       assert.equal( node.nodeType, Tree.DOCUMENT_NODE )

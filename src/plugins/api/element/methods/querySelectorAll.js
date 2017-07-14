@@ -6,7 +6,10 @@ const adapter = require( '../../../../css-select-adapter' )
 const options = { adapter }
 
 const querySelectorAll = ({ api, state, core }) => {
-  if( !api.isElementNode() ) return
+  const canSelect =
+    api.isElementNode() || api.isDocumentNode() || api.isDocumentFragmentNode()
+
+  if( !canSelect ) return
 
   api.querySelectorAll = selector => {
     const { getApi, nodeList } = core

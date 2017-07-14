@@ -234,6 +234,23 @@ describe( 'DOM plugins', () => {
           assert( !fragment.matches( '.foo' ) )
           assert( !fragment.matches( '[title=bar]' ) )
         })
+
+        describe( 'matches attributes', () => {
+          const div = Tree.parse( '<div name="something"></div>' )
+
+          const expect = {
+            name: true,
+            id: false
+          }
+
+          Object.keys( expect ).forEach( name => {
+            it( `${ name } should be ${ expect[ name ] }`, () => {
+              const selector = `[${ name }]`
+
+              assert.strictEqual( div.matches( selector ), expect[ name ] )
+            })
+          })
+        })
       })
 
       it( 'non standard contains selector', () => {

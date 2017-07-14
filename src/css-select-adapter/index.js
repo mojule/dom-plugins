@@ -5,7 +5,8 @@ const is = require( '@mojule/is' )
 
 const isTag = node => is.string( node.tagName )
 
-const getAttributeValue = ( node, name ) => node.getAttribute( name )
+const getAttributeValue = ( node, name ) =>
+  node.getAttribute( name ) || undefined
 
 const getChildren = node => Array.from( node.childNodes )
 

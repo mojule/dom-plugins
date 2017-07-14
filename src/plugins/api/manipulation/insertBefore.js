@@ -6,7 +6,7 @@ const insertBefore = ({ api, state, core }) => {
   api.insertBefore = ( child, reference ) => {
     child = insertBefore( child, reference )
 
-    if( child.isDocumentFragmentNode() )
+    if( child.parentNode && child.isDocumentFragmentNode() )
       child.unwrap()
 
     return child

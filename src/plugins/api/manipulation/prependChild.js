@@ -6,7 +6,7 @@ const prependChild = ({ api, state, core }) => {
   api.prependChild = child => {
     child = prependChild( child )
 
-    if( child.isDocumentFragmentNode() )
+    if( child.parentNode && child.isDocumentFragmentNode() )
       child.unwrap()
 
     return child

@@ -6,7 +6,7 @@ const insertAfter = ({ api, state, core }) => {
   api.insertAfter = ( child, reference ) => {
     child = insertAfter( child, reference )
 
-    if( child.isDocumentFragmentNode() )
+    if( child.parentNode && child.isDocumentFragmentNode() )
       child.unwrap()
 
     return child

@@ -65,6 +65,8 @@ module.exports = [
   firstElementChild, id, innerHTML, lastElementChild, name, nextElementSibling,
   outerHTML, previousElementSibling, tagName, title,
 
+  appendChild, insertAfter, insertBefore, prependChild,
+
   cloneNode, isEqualNode, isInlineNode, isSameNode, normalize, toString,
   whitespace,
 

@@ -7,10 +7,8 @@ const select = ({ api, state, core }) => {
   if( !canSelect ) return
 
   api.select = selector => {
-    const { getApi } = core
-
-    if( api.matches( selector ) )
-      return getApi( state )
+    if( api.isElementNode() && api.matches( selector ) )
+      return api
 
     return api.querySelector( selector )
   }

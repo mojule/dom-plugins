@@ -6,8 +6,11 @@ const is = require( '@mojule/is' )
 const isTag = node => node.isElementNode()
 
 const getAttributeValue = ( node, name ) => {
-  if( is.function( node.getAttribute ) )
-    return node.getAttribute( name ) || undefined
+  if( is.function( node.getAttribute ) ){
+    const value = node.getAttribute( name )
+
+    if( !is.null( value ) ) return value
+  }
 }
 
 const getChildren = node => node.childNodes

@@ -1,7 +1,7 @@
 'use strict'
 
-const DomHandler = ( nodeApi, options ) => {
-  const state = State( nodeApi, options )
+const DomHandler = ( NodeApi, options ) => {
+  const state = State( NodeApi, options )
 
   const handler = { state }
 
@@ -15,39 +15,33 @@ const defaultOpts = {
   normalizeWhitespace: false
 }
 
-const State = ( nodeApi, options ) => {
+const State = ( NodeApi, options ) => {
   options = Object.assign( {}, defaultOpts, options )
 
-  const fragment = nodeApi.createDocumentFragment()
+  const fragment = NodeApi.createDocumentFragment()
   const done = false
   const tagStack = []
   const parser = null
 
   const state = {
-    options, fragment, done, tagStack, parser, nodeApi
+    options, fragment, done, tagStack, parser, NodeApi
   }
 
   return state
 }
 
 const Api = handler => {
-  const { options, nodeApi, tagStack, fragment } = handler.state
+  const { options, NodeApi, tagStack, fragment } = handler.state
 
   const onend = () => {
     handler.state.done = true
     handler.state.parser = null
-
-    onerror( null )
-  }
-
-  const onerror = err => {
-    if( err ) throw err
   }
 
   const onclosetag = () => tagStack.pop()
 
   const onopentag = ( name, attribs ) => {
-    const element = nodeApi.createElement( name, attribs )
+    const element = NodeApi.createElement( name, attribs )
 
     addDomNode( handler, element )
 
@@ -55,13 +49,13 @@ const Api = handler => {
   }
 
   const ontext = data => {
-    const text = nodeApi.createText( data )
+    const text = NodeApi.createText( data )
 
     addDomNode( handler, text )
   }
 
   const oncomment = data => {
-    const comment = nodeApi.createComment( data )
+    const comment = NodeApi.createComment( data )
 
     addDomNode( handler, comment )
     tagStack.push( comment )
@@ -70,7 +64,7 @@ const Api = handler => {
   const onprocessinginstruction = ( name, data ) => {
     /* only support html5 doctype, look into parsing the data string properly */
     if( data.toLowerCase().startsWith( '!doctype' ) ){
-      const doctype = nodeApi.createDocumentType( 'html' )
+      const doctype = NodeApi.createDocumentType( 'html' )
 
       addDomNode( handler, doctype )
 
@@ -86,8 +80,8 @@ const Api = handler => {
   const getDom = () => handler.state.fragment
 
   const api = {
-    onend, onerror, onclosetag, onopentag, ontext, oncomment,
-    oncommentend, onprocessinginstruction, getDom
+    onend, onclosetag, onopentag, ontext, oncomment, oncommentend,
+    onprocessinginstruction, getDom
   }
 
   return api
@@ -99,7 +93,7 @@ const addDomNode = ( handler, node ) => {
   const parent = tagStack[ tagStack.length - 1 ]
   const target = parent || fragment
 
-  target.append( node )
+  target.appendChild( node )
 }
 
 module.exports = DomHandler

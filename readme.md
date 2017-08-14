@@ -4,6 +4,9 @@ A set of plugins for mojule [tree](https://github.com/mojule/tree) that lets you
 treat any tree as a DOM, allowing you to do interesting things like run query
 selectors over your tree even if the nodes don't represent HTML elements.
 
+**Important:** these documents describe an earlier version and are out of date,
+however the tests are current and serve as a temporary example of how to use
+
 ## Install
 
 `npm install @mojule/dom-plugins`

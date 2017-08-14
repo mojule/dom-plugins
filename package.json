@@ -25,7 +25,7 @@
   "homepage": "https://github.com/mojule/dom-plugins#readme",
   "devDependencies": {
     "@mojule/html": "^0.2.4",
-    "@mojule/tree": "github:mojule/tree#1.0.0",
+    "@mojule/tree": "^1.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0"
   },
